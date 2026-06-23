@@ -1,0 +1,28 @@
+{
+  "name": "docuscan",
+  "version": "2.0.0",
+  "description": "DocuScan - Document OCR and Export System",
+  "main": "docuscan.html",
+  "scripts": {
+    "dev": "netlify dev",
+    "build": "echo 'Build complete'",
+    "serve": "python -m http.server 8000"
+  },
+  "keywords": [
+    "ocr",
+    "document",
+    "exam",
+    "education",
+    "pdf"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.0.0"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}

@@ -1,0 +1,21 @@
+# Netlify Configuration for DocuScan
+# https://docs.netlify.com/configure-builds/file-based-configuration
+
+[build]
+  command = "echo 'DocuScan is a static site with Netlify Functions'"
+  functions = "functions"
+  publish = "."
+
+[functions]
+  node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/:splat"
+  status = 200
+
+[env.production]
+  GEMINI_API_KEY = ""
+
+[env.staging]
+  GEMINI_API_KEY = ""

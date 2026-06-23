@@ -1,0 +1,1689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>DocuScan – Snap. Convert. Edit. Print.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --navy:       #1B2A5E;   /* institutional anchor */
+  --navy-deep:  #0F1A3D;
+  --gold:       #C9921A;   /* warm amber-gold accent */
+  --gold-light: #F5C842;
+  --cream:      #F7F5F0;   /* warm neutral background */
+  --white:      #FFFFFF;
+  --slate:      #4A5568;
+  --mist:       #E8E6E1;
+  --text:       #1A1A2E;
+  --success:    #16A34A;
+  --error:      #DC2626;
+
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --shadow-sm:  0 2px 8px rgba(27,42,94,0.08);
+  --shadow-md:  0 6px 24px rgba(27,42,94,0.12);
+  --shadow-lg:  0 16px 48px rgba(27,42,94,0.16);
+
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--cream);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+/* ============================================================
+   HEADER / HERO
+   ============================================================ */
+.app-header {
+  background: var(--navy-deep);
+  padding: 18px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.3);
+}
+
+.logo-mark {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  color: var(--white);
+  letter-spacing: -0.5px;
+}
+
+.logo-text span { color: var(--gold-light); }
+
+.tagline {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.school-badge {
+  background: rgba(201,146,26,0.15);
+  border: 1px solid rgba(201,146,26,0.3);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-size: 0.72rem;
+  color: var(--gold-light);
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================================
+   STEP INDICATOR
+   ============================================================ */
+.steps-bar {
+  background: var(--navy);
+  padding: 0 32px;
+  display: flex;
+  gap: 0;
+  overflow-x: auto;
+}
+
+.step-tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 20px;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.step-tab.active {
+  color: var(--gold-light);
+  border-bottom-color: var(--gold-light);
+}
+
+.step-tab.done {
+  color: rgba(255,255,255,0.6);
+}
+
+.step-num {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.step-tab.active .step-num {
+  background: var(--gold);
+  color: var(--navy-deep);
+}
+
+.step-tab.done .step-num {
+  background: var(--success);
+  color: white;
+}
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 40px 24px 80px;
+}
+
+/* ============================================================
+   CARD
+   ============================================================ */
+.card {
+  background: var(--white);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 36px 40px;
+  margin-bottom: 24px;
+  animation: slideUp 0.3s ease both;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.card-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+
+.card-subtitle {
+  color: var(--slate);
+  font-size: 0.88rem;
+  margin-bottom: 32px;
+}
+
+/* ============================================================
+   FORM ELEMENTS
+   ============================================================ */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--navy);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+select, input[type="text"] {
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  padding: 11px 14px;
+  border: 1.5px solid var(--mist);
+  border-radius: var(--radius-sm);
+  background: var(--cream);
+  color: var(--text);
+  transition: border-color var(--transition), box-shadow var(--transition);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%234A5568' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+}
+
+input[type="text"] {
+  background-image: none;
+  padding-right: 14px;
+}
+
+select:focus, input[type="text"]:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,146,26,0.12);
+}
+
+/* ============================================================
+   UPLOAD ZONE
+   ============================================================ */
+.upload-zone {
+  border: 2.5px dashed var(--mist);
+  border-radius: var(--radius-lg);
+  padding: 60px 32px;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  position: relative;
+  background: var(--cream);
+}
+
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--gold);
+  background: rgba(201,146,26,0.04);
+}
+
+.upload-zone input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.upload-icon {
+  font-size: 3rem;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.upload-primary {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.upload-secondary {
+  font-size: 0.84rem;
+  color: var(--slate);
+}
+
+.upload-formats {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+.format-chip {
+  background: var(--navy);
+  color: rgba(255,255,255,0.85);
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   IMAGE PREVIEW
+   ============================================================ */
+.preview-strip {
+  display: none;
+  margin-top: 24px;
+  position: relative;
+  border-radius: var(--radius-md);
+  padding: 18px;
+  background: #ffffff;
+  box-shadow: var(--shadow-sm);
+}
+
+.preview-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+}
+
+.preview-grid .preview-thumb {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+}
+
+.preview-grid .preview-thumb img {
+  width: 100%;
+  height: 100px;
+  object-fit: cover;
+  display: block;
+}
+
+.preview-grid .preview-thumb span {
+  display: block;
+  padding: 8px 10px;
+  font-size: 0.78rem;
+  color: var(--slate);
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.preview-strip .remove-img {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.65);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all var(--transition);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--gold), #E0A820);
+  color: var(--navy-deep);
+  box-shadow: 0 4px 12px rgba(201,146,26,0.35);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(201,146,26,0.45);
+}
+
+.btn-navy {
+  background: var(--navy);
+  color: white;
+}
+
+.btn-navy:hover {
+  background: var(--navy-deep);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid var(--mist);
+  color: var(--slate);
+}
+
+.btn-outline:hover {
+  border-color: var(--navy);
+  color: var(--navy);
+}
+
+.btn-sm { padding: 8px 16px; font-size: 0.82rem; }
+
+.btn-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+/* ============================================================
+   LOADING SPINNER
+   ============================================================ */
+.ocr-loader {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 48px;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--mist);
+  border-top-color: var(--gold);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.loader-text {
+  color: var(--slate);
+  font-size: 0.92rem;
+  text-align: center;
+}
+
+.loader-sub {
+  color: rgba(74,85,104,0.6);
+  font-size: 0.78rem;
+}
+
+/* ============================================================
+   SPLIT SCREEN EDITOR
+   ============================================================ */
+.editor-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.editor-panel {
+  background: var(--cream);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  border: 1px solid var(--mist);
+}
+
+.panel-header {
+  background: var(--navy);
+  color: white;
+  padding: 12px 18px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-header .badge {
+  background: rgba(255,255,255,0.15);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 0.68rem;
+}
+
+.panel-img {
+  width: 100%;
+  max-height: 500px;
+  object-fit: contain;
+  display: block;
+  background: #f0f0f0;
+}
+
+/* Editable content area */
+.exam-editor {
+  min-height: 500px;
+  padding: 24px;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  line-height: 1.8;
+  color: var(--text);
+  outline: none;
+  background: white;
+  border: none;
+  resize: none;
+  width: 100%;
+}
+
+.editor-toolbar {
+  display: flex;
+  gap: 6px;
+  padding: 10px 14px;
+  background: #f8f7f4;
+  border-bottom: 1px solid var(--mist);
+  flex-wrap: wrap;
+}
+
+.tool-btn {
+  background: none;
+  border: 1px solid var(--mist);
+  border-radius: 4px;
+  padding: 5px 10px;
+  font-size: 0.78rem;
+  cursor: pointer;
+  color: var(--slate);
+  transition: all 0.15s;
+  font-family: var(--font-body);
+}
+
+.tool-btn:hover {
+  background: var(--navy);
+  color: white;
+  border-color: var(--navy);
+}
+
+/* ============================================================
+   EXAM HEADER BLOCK (inside editor)
+   ============================================================ */
+.exam-header-block {
+  text-align: center;
+  border-bottom: 2px solid var(--navy);
+  padding-bottom: 16px;
+  margin-bottom: 20px;
+  pointer-events: none;
+  user-select: none;
+}
+
+.school-name-display {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 900;
+  color: var(--navy);
+  letter-spacing: 0.5px;
+  line-height: 1.3;
+}
+
+.school-address-display {
+  font-size: 0.78rem;
+  color: var(--slate);
+  margin: 2px 0 8px;
+}
+
+.exam-meta-display {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--navy);
+  margin: 3px 0;
+}
+
+/* ============================================================
+   PREVIEW PANEL
+   ============================================================ */
+.preview-paper {
+  background: white;
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 48px 56px;
+  box-shadow: var(--shadow-lg), 0 1px 2px rgba(0,0,0,0.05);
+  border-radius: 4px;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 13px;
+  line-height: 1.8;
+  color: #111;
+  min-height: 800px;
+  position: relative;
+}
+
+.preview-paper::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 6px;
+  background: linear-gradient(90deg, var(--navy), var(--gold));
+  border-radius: 4px 4px 0 0;
+}
+
+.preview-school-name {
+  font-size: 15px;
+  font-weight: 700;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 2px;
+}
+
+.preview-school-address {
+  font-size: 11px;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.preview-exam-line {
+  font-size: 12px;
+  text-align: center;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin: 3px 0;
+}
+
+.preview-divider {
+  border: none;
+  border-top: 1.5px solid #111;
+  margin: 12px 0;
+}
+
+.preview-meta-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11.5px;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.preview-body {
+  white-space: pre-wrap;
+  font-size: 12.5px;
+  line-height: 1.9;
+}
+
+/* ============================================================
+   EXPORT BUTTONS
+   ============================================================ */
+.export-row {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 32px;
+  flex-wrap: wrap;
+}
+
+.export-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 20px 28px;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  border: none;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+  min-width: 120px;
+}
+
+.export-btn .icon { font-size: 1.8rem; }
+.export-btn .label { font-size: 0.82rem; font-weight: 600; }
+
+.export-print {
+  background: var(--navy);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+.export-print:hover { background: var(--navy-deep); transform: translateY(-2px); }
+
+.export-pdf {
+  background: linear-gradient(135deg, var(--gold), #E0A820);
+  color: var(--navy-deep);
+  box-shadow: 0 4px 12px rgba(201,146,26,0.3);
+}
+.export-pdf:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(201,146,26,0.4); }
+
+.export-copy {
+  background: var(--cream);
+  color: var(--navy);
+  border: 1.5px solid var(--mist);
+}
+.export-copy:hover { border-color: var(--navy); transform: translateY(-2px); }
+
+/* ============================================================
+   TOAST NOTIFICATIONS
+   ============================================================ */
+.toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background: var(--navy-deep);
+  color: white;
+  padding: 14px 22px;
+  border-radius: var(--radius-sm);
+  font-size: 0.88rem;
+  box-shadow: var(--shadow-lg);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: all 0.3s ease;
+  z-index: 9999;
+  max-width: 300px;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.success { border-left: 4px solid var(--success); }
+.toast.error   { border-left: 4px solid var(--error); }
+.toast.info    { border-left: 4px solid var(--gold); }
+
+/* ============================================================
+   SECTION VISIBILITY
+   ============================================================ */
+.section { display: none; }
+.section.active { display: block; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 768px) {
+  .app-header { padding: 14px 20px; }
+  .logo-text { font-size: 1.3rem; }
+  .school-badge { display: none; }
+  .main { padding: 24px 16px 60px; }
+  .card { padding: 24px 20px; }
+  .editor-layout { grid-template-columns: 1fr; }
+  .preview-paper { padding: 32px 28px; }
+  .steps-bar { padding: 0 16px; }
+  .step-tab { padding: 12px 14px; font-size: 0.72rem; }
+}
+
+@media (max-width: 480px) {
+  .form-grid { grid-template-columns: 1fr; }
+  .export-row { gap: 10px; }
+  .export-btn { padding: 16px 20px; min-width: 100px; }
+}
+
+/* ============================================================
+   CLEANUP HIGHLIGHT
+   ============================================================ */
+.cleanup-changed {
+  background: rgba(201,146,26,0.15);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
+/* Progress fill bar */
+.progress-bar-wrap {
+  background: var(--mist);
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--navy), var(--gold));
+  border-radius: 2px;
+  transition: width 0.5s ease;
+}
+</style>
+</head>
+<body>
+
+<!-- ===== APP HEADER ===== -->
+<header class="app-header">
+  <div class="logo-mark">
+    <div class="logo-icon">📄</div>
+    <div>
+      <div class="logo-text">Docu<span>Scan</span></div>
+      <div class="tagline">Snap · Convert · Edit · Print</div>
+    </div>
+  </div>
+  <div class="school-badge">
+    Great Turning Point<br>International School
+  </div>
+</header>
+
+<!-- ===== STEP TABS ===== -->
+<nav class="steps-bar" id="stepTabs">
+  <div class="step-tab active" data-step="1">
+    <div class="step-num">1</div> Exam Details
+  </div>
+  <div class="step-tab" data-step="2">
+    <div class="step-num">2</div> Upload Image
+  </div>
+  <div class="step-tab" data-step="3">
+    <div class="step-num">3</div> Extract & Edit
+  </div>
+  <div class="step-tab" data-step="4">
+    <div class="step-num">4</div> Preview & Export
+  </div>
+</nav>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main class="main">
+
+  <!-- STEP 1: EXAM DETAILS -->
+  <div class="section active" id="step1">
+    <div class="card">
+      <div class="card-title">Examination Details</div>
+      <div class="card-subtitle">Fill in the details for this examination paper before uploading your questions.</div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:25%"></div>
+      </div>
+
+      <div class="form-grid">
+        <!-- Term -->
+        <div class="form-group">
+          <label for="examTerm">Examination Type</label>
+          <select id="examTerm">
+            <option value="">— Select Term —</option>
+            <option value="1ST TERM">1st Term Examination</option>
+            <option value="2ND TERM">2nd Term Examination</option>
+            <option value="3RD TERM">3rd Term Examination</option>
+          </select>
+        </div>
+
+        <!-- Session -->
+        <div class="form-group">
+          <label for="examSession">Academic Session</label>
+          <select id="examSession">
+            <option value="2024/2025">2024/2025</option>
+            <option value="2025/2026">2025/2026</option>
+            <option value="2026/2027" selected>2026/2027</option>
+            <option value="2027/2028">2027/2028</option>
+            <option value="2028/2029">2028/2029</option>
+          </select>
+        </div>
+
+        <!-- Subject -->
+        <div class="form-group">
+          <label for="examSubject">Subject</label>
+          <select id="examSubject" onchange="handleSubjectChange(this)">
+            <option value="">— Select Subject —</option>
+            <option value="ENGLISH LANGUAGE">English Language</option>
+            <option value="MATHEMATICS">Mathematics</option>
+            <option value="BASIC SCIENCE">Basic Science</option>
+            <option value="CIVIC EDUCATION">Civic Education</option>
+            <option value="COMPUTER STUDIES">Computer Studies</option>
+            <option value="SOCIAL STUDIES">Social Studies</option>
+            <option value="AGRICULTURAL SCIENCE">Agricultural Science</option>
+            <option value="CHRISTIAN RELIGIOUS STUDIES">Christian Religious Studies</option>
+            <option value="PHYSICAL EDUCATION">Physical Education</option>
+            <option value="CREATIVE ARTS">Creative Arts</option>
+            <option value="FRENCH">French</option>
+            <option value="BIOLOGY">Biology</option>
+            <option value="CHEMISTRY">Chemistry</option>
+            <option value="PHYSICS">Physics</option>
+            <option value="ECONOMICS">Economics</option>
+            <option value="GOVERNMENT">Government</option>
+            <option value="LITERATURE IN ENGLISH">Literature in English</option>
+            <option value="GEOGRAPHY">Geography</option>
+            <option value="CUSTOM">Other (type below)…</option>
+          </select>
+        </div>
+
+        <!-- Custom subject -->
+        <div class="form-group" id="customSubjectGroup" style="display:none;">
+          <label for="customSubject">Custom Subject</label>
+          <input type="text" id="customSubject" placeholder="e.g. Home Economics" />
+        </div>
+
+        <!-- Class -->
+        <div class="form-group">
+          <label for="examClass">Class</label>
+          <select id="examClass">
+            <option value="">— Select Class —</option>
+            <optgroup label="Nursery">
+              <option value="NURSERY 1">Nursery 1</option>
+              <option value="NURSERY 2">Nursery 2</option>
+              <option value="NURSERY 3">Nursery 3</option>
+            </optgroup>
+            <optgroup label="Primary">
+              <option value="PRIMARY 1">Primary 1</option>
+              <option value="PRIMARY 2">Primary 2</option>
+              <option value="PRIMARY 3">Primary 3</option>
+              <option value="PRIMARY 4">Primary 4</option>
+              <option value="PRIMARY 5">Primary 5</option>
+              <option value="PRIMARY 6">Primary 6</option>
+            </optgroup>
+            <optgroup label="Junior Secondary">
+              <option value="JSS 1">JSS 1</option>
+              <option value="JSS 2">JSS 2</option>
+              <option value="JSS 3">JSS 3</option>
+            </optgroup>
+            <optgroup label="Senior Secondary">
+              <option value="SSS 1">SSS 1</option>
+              <option value="SSS 2">SSS 2</option>
+              <option value="SSS 3">SSS 3</option>
+            </optgroup>
+          </select>
+        </div>
+
+        <!-- Duration -->
+        <div class="form-group">
+          <label for="examDuration">Duration</label>
+          <select id="examDuration">
+            <option value="">— Select Duration —</option>
+            <option value="30 MINS">30 Minutes</option>
+            <option value="45 MINS">45 Minutes</option>
+            <option value="1 HOUR">1 Hour</option>
+            <option value="1 HOUR 30 MINS">1 Hour 30 Minutes</option>
+            <option value="2 HOURS">2 Hours</option>
+            <option value="2 HOURS 30 MINS">2 Hours 30 Minutes</option>
+            <option value="3 HOURS">3 Hours</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="goToStep2()">
+          Continue to Upload →
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 2: UPLOAD IMAGE -->
+  <div class="section" id="step2">
+    <div class="card">
+      <div class="card-title">Upload Question Paper Image</div>
+      <div class="card-subtitle">Take a photo or upload a scan of the examination questions. We'll convert it to editable text.</div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:50%"></div>
+      </div>
+
+      <div class="upload-zone" id="uploadZone"
+           ondragover="handleDragOver(event)"
+           ondragleave="handleDragLeave(event)"
+           ondrop="handleDrop(event)">
+        <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.webp,image/*"
+               multiple capture="environment" onchange="handleFileSelect(event)" />
+        <span class="upload-icon">📸</span>
+        <div class="upload-primary">Drag & drop up to 5 images here</div>
+        <div class="upload-secondary">or click to browse / use camera</div>
+        <div class="upload-formats">
+          <span class="format-chip">JPG</span>
+          <span class="format-chip">JPEG</span>
+          <span class="format-chip">PNG</span>
+          <span class="format-chip">WEBP</span>
+        </div>
+      </div>
+
+      <div class="preview-strip" id="previewStrip" style="display:none;">
+        <div id="previewGrid" class="preview-grid"></div>
+        <button class="remove-img" onclick="removeImage()" title="Clear all images">✕</button>
+      </div>
+
+      <div class="btn-row">
+        <button type="button" class="btn btn-outline" onclick="goToStep(1)">← Back</button>
+        <button type="button" class="btn btn-primary" id="extractBtn" onclick="startOCR()" style="display:none;">
+          🔍 Extract Text
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 3: EXTRACT & EDIT -->
+  <div class="section" id="step3">
+    <div class="card" style="padding:0; overflow:hidden;">
+      <div style="padding:28px 32px 20px;">
+        <div class="card-title">Extract & Edit Questions</div>
+        <div class="card-subtitle">Your questions have been extracted. Review and correct any errors in the editor on the right.</div>
+        <div class="progress-bar-wrap">
+          <div class="progress-bar-fill" style="width:75%"></div>
+        </div>
+      </div>
+
+      <!-- OCR Loader -->
+      <div class="ocr-loader" id="ocrLoader">
+        <div class="spinner"></div>
+        <div class="loader-text">Extracting text from your image…</div>
+        <div class="loader-sub" id="ocrLoaderSub">Processing with Google Vision API</div>
+      </div>
+
+      <!-- Editor Layout -->
+      <div class="editor-layout" id="editorLayout" style="display:none; padding:0 28px 28px;">
+        <!-- LEFT: Original image -->
+        <div class="editor-panel">
+          <div class="panel-header">
+            📷 Original Image
+            <span class="badge">Reference</span>
+          </div>
+          <img class="panel-img" id="editorImg" src="" alt="Original" />
+        </div>
+
+        <!-- RIGHT: Editable text -->
+        <div class="editor-panel">
+          <div class="panel-header">
+            ✏️ Extracted Text
+            <span class="badge">Editable</span>
+          </div>
+          <div class="editor-toolbar">
+            <button class="tool-btn" onclick="aiCleanup()" title="Auto-fix spacing, numbering, punctuation">✨ AI Cleanup</button>
+            <button class="tool-btn" onclick="fixNumbering()" title="Fix question numbering">🔢 Fix Numbers</button>
+            <button class="tool-btn" onclick="removeExtraSpaces()" title="Remove extra spaces">🧹 Clean Spaces</button>
+            <button class="tool-btn" onclick="addQuestion()" title="Add a new question line">＋ Add Question</button>
+            <button class="tool-btn" onclick="copyExtractedText()" title="Copy extracted text only">📋 Copy All Text</button>
+            <button class="tool-btn" onclick="clearEditor()" title="Clear all text">🗑 Clear</button>
+          </div>
+          <!-- Exam Header (non-editable display) -->
+          <div class="exam-header-block" id="examHeaderDisplay" style="padding:16px 20px 14px; background:white; border-bottom:1.5px solid var(--mist);">
+            <div class="school-name-display">GREAT TURNING POINT INTERNATIONAL SCHOOL</div>
+            <div class="school-address-display">UMUODE, OSISIOMA NGWA L.G.A, ABIA STATE</div>
+            <div class="exam-meta-display" id="hdrTermSession">3RD TERM EXAMINATION, 2026/2027 ACADEMIC SESSION</div>
+            <div class="exam-meta-display" id="hdrSubject">SUBJECT: —</div>
+            <div class="exam-meta-display" id="hdrClass">CLASS: —</div>
+            <div class="exam-meta-display" id="hdrDuration">DURATION: —</div>
+          </div>
+          <!-- Editable content -->
+          <textarea class="exam-editor" id="examEditor" placeholder="Extracted questions will appear here…&#10;You can edit, add, or delete text freely."></textarea>
+        </div>
+      </div>
+
+      <div style="padding:0 28px 28px;">
+        <div class="btn-row">
+          <button class="btn btn-outline" onclick="goToStep(2)">← Back</button>
+          <button class="btn btn-primary" onclick="goToPreview()">Preview Paper →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STEP 4: PREVIEW & EXPORT -->
+  <div class="section" id="step4">
+    <div class="card">
+      <div class="card-title">Preview & Export</div>
+      <div class="card-subtitle">Review the final examination paper. Use the buttons below to print, save as PDF, or copy the text.</div>
+
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:100%"></div>
+      </div>
+
+      <!-- Paper preview -->
+      <div class="preview-paper" id="previewPaper">
+        <div class="preview-school-name">Great Turning Point International School</div>
+        <div class="preview-school-address">Umuode, Osisioma Ngwa L.G.A, Abia State</div>
+        <div class="preview-exam-line" id="pvTermSession"></div>
+        <hr class="preview-divider" />
+        <div class="preview-meta-row">
+          <span id="pvSubject"></span>
+          <span id="pvClass"></span>
+          <span id="pvDuration"></span>
+        </div>
+        <div class="preview-body" id="pvBody"></div>
+      </div>
+
+      <div class="export-row">
+        <button class="export-btn export-print" onclick="printPaper()">
+          <span class="icon">🖨️</span>
+          <span class="label">Print</span>
+        </button>
+        <button class="export-btn export-pdf" onclick="downloadPDF()">
+          <span class="icon">📥</span>
+          <span class="label">Download PDF</span>
+        </button>
+        <button class="export-btn export-copy" onclick="copyText()">
+          <span class="icon">📋</span>
+          <span class="label">Copy Text</span>
+        </button>
+      </div>
+
+      <div class="btn-row" style="justify-content:center; margin-top:20px;">
+        <button class="btn btn-outline" onclick="goToStep(3)">← Back to Editor</button>
+        <button class="btn btn-navy" onclick="startNew()">📄 New Examination</button>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Print Styles -->
+<style id="printStyles">
+@media print {
+  body * { visibility: hidden; }
+  #previewPaper, #previewPaper * { visibility: visible; }
+  #previewPaper {
+    position: fixed !important;
+    inset: 0;
+    box-shadow: none !important;
+    margin: 0;
+    border-radius: 0 !important;
+    max-width: 100% !important;
+    padding: 24mm 22mm !important;
+    font-size: 12pt !important;
+  }
+  #previewPaper::before { display: none; }
+}
+</style>
+
+<!-- ============================================================
+     JAVASCRIPT
+     ============================================================ -->
+<script>
+/* ================================================================
+   STATE
+   ================================================================ */
+const MAX_IMAGE_UPLOADS = 5;
+
+let appState = {
+  currentStep: 1,
+  imageFiles: [],
+  imageDataURLs: [],
+  extractedText: '',
+  details: {}
+};
+
+/* ================================================================
+   STEP NAVIGATION
+   ================================================================ */
+function goToStep(n) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('step' + n).classList.add('active');
+  appState.currentStep = n;
+
+  // Update tabs
+  const tabs = document.querySelectorAll('.step-tab');
+  tabs.forEach(tab => {
+    const t = parseInt(tab.dataset.step);
+    tab.classList.remove('active', 'done');
+    if (t === n) tab.classList.add('active');
+    else if (t < n) tab.classList.add('done');
+  });
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+/* ================================================================
+   STEP 1 → 2: VALIDATE DETAILS
+   ================================================================ */
+function goToStep2() {
+  const term     = document.getElementById('examTerm').value;
+  const session  = document.getElementById('examSession').value;
+  const subject  = getSubject();
+  const cls      = document.getElementById('examClass').value;
+  const duration = document.getElementById('examDuration').value;
+
+  if (!term)     return showToast('Please select an Examination Type.', 'error');
+  if (!session)  return showToast('Please select an Academic Session.', 'error');
+  if (!subject)  return showToast('Please select or enter a Subject.', 'error');
+  if (!cls)      return showToast('Please select a Class.', 'error');
+  if (!duration) return showToast('Please select a Duration.', 'error');
+
+  appState.details = { term, session, subject, cls, duration };
+  updateHeaderDisplay();
+  goToStep(2);
+}
+
+function getSubject() {
+  const sel = document.getElementById('examSubject').value;
+  if (sel === 'CUSTOM') {
+    return document.getElementById('customSubject').value.trim().toUpperCase();
+  }
+  return sel;
+}
+
+function handleSubjectChange(sel) {
+  document.getElementById('customSubjectGroup').style.display =
+    sel.value === 'CUSTOM' ? 'flex' : 'none';
+}
+
+/* ================================================================
+   STEP 2: IMAGE UPLOAD
+   ================================================================ */
+function handleDragOver(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+  document.getElementById('uploadZone').classList.remove('drag-over');
+}
+
+function handleDrop(e) {
+  e.preventDefault();
+  document.getElementById('uploadZone').classList.remove('drag-over');
+  const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
+  if (files.length) {
+    loadImageFiles(files);
+  } else {
+    showToast('Please drop one or more image files (JPG, PNG, WEBP).', 'error');
+  }
+}
+
+function handleFileSelect(e) {
+  const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
+  if (files.length) {
+    loadImageFiles(files);
+  } else {
+    showToast('Please choose one or more image files (JPG, PNG, WEBP).', 'error');
+  }
+}
+
+function loadImageFiles(files) {
+  if (files.length > MAX_IMAGE_UPLOADS) {
+    showToast(`Please select up to ${MAX_IMAGE_UPLOADS} images only.`, 'error');
+    document.getElementById('fileInput').value = '';
+    return;
+  }
+
+  // Multi-file upload: preserve the selected image files and render previews
+  const selected = files;
+
+  Promise.all(selected.map(file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => resolve(e.target.result);
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  })))
+    .then(imageDataURLs => {
+      appState.imageFiles = selected;
+      appState.imageDataURLs = imageDataURLs;
+      renderPreviewGrid(imageDataURLs);
+      document.getElementById('previewStrip').style.display = 'block';
+      document.getElementById('extractBtn').style.display = 'inline-flex';
+      console.log('[ocr] Images loaded:', selected.map(f => f.name));
+      showToast(`${imageDataURLs.length} image(s) loaded. Click "Extract Text" to proceed.`, 'info');
+    })
+    .catch(err => {
+      console.error('[ocr] Failed to load images', err);
+      showToast('Unable to load one or more images. Please try again.', 'error');
+    });
+}
+
+function renderPreviewGrid(imageDataURLs) {
+  const previewGrid = document.getElementById('previewGrid');
+  previewGrid.innerHTML = '';
+
+  // Preview rendering: show thumbnails for every selected image before OCR starts
+  imageDataURLs.forEach((dataURL, index) => {
+    const thumb = document.createElement('div');
+    thumb.className = 'preview-thumb';
+    thumb.innerHTML = `
+      <img src="${dataURL}" alt="Page ${index + 1}" />
+      <span>Page ${index + 1}</span>
+    `;
+    previewGrid.appendChild(thumb);
+  });
+}
+
+function removeImage() {
+  appState.imageFiles = [];
+  appState.imageDataURLs = [];
+  document.getElementById('previewGrid').innerHTML = '';
+  document.getElementById('previewStrip').style.display = 'none';
+  document.getElementById('extractBtn').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+}
+
+/* ================================================================
+   STEP 3: OCR (Netlify Function + Google Vision API)
+   Backend architecture: Frontend → Netlify Function → Google Vision
+   API key is secure in Netlify environment variables.
+   ================================================================ */
+
+const OCR_ENDPOINT = '/.netlify/functions/ocr';
+const OCR_TIMEOUT = 60000; // 60 seconds
+
+async function startOCR() {
+  if (!appState.imageDataURLs.length) {
+    return showToast('Please upload at least one image first.', 'error');
+  }
+  goToStep(3);
+
+  document.getElementById('ocrLoader').style.display = 'flex';
+  document.getElementById('editorLayout').style.display = 'none';
+
+  try {
+    console.log('[ocr] Starting OCR request for', appState.imageDataURLs.length, 'image(s)');
+    let combinedText = '';
+    const total = appState.imageDataURLs.length;
+
+    // OCR loop: process each selected image sequentially to avoid rate limits
+    for (let i = 0; i < total; i++) {
+      const pageNumber = i + 1;
+      document.getElementById('ocrLoaderSub').textContent = `Processing page ${pageNumber} of ${total}...`;
+      const pageText = await callNetlifyOCR(appState.imageDataURLs[i]);
+
+      // Progress updates: show the current page being processed
+      combinedText += `\n\n===== PAGE ${pageNumber} =====\n\n${pageText.trim()}`;
+    }
+
+    // Final text merging: combine all OCR results into one document for editing
+    combinedText = combinedText.trim();
+    console.log('[ocr] Combined text length:', combinedText.length);
+    appState.extractedText = combinedText;
+    renderEditor(combinedText);
+  } catch (err) {
+    console.error('[ocr] OCR error:', err);
+    showToast('OCR processing failed: ' + (err.message || err), 'error');
+    appState.extractedText = '';
+    renderEditor('');
+  }
+}
+
+async function callNetlifyOCR(imageDataURL) {
+  const loaderSub = document.getElementById('ocrLoaderSub');
+  const originalText = loaderSub.textContent;
+  
+  try {
+    // Validate image data
+    if (!imageDataURL.startsWith('data:image/')) {
+      throw new Error('Invalid image format');
+    }
+
+    // Check if running on localhost or deployed
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1';
+    const isDev = typeof process !== 'undefined' && process?.env?.NODE_ENV === 'development';
+
+    loaderSub.textContent = 'Uploading image…';
+    console.log('[ocr] Preparing upload to OCR endpoint');
+    console.log('[ocr] ImageData prefix:', imageDataURL.substring(0, 80));
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), OCR_TIMEOUT);
+
+    // Send request to Netlify Function
+    const response = await fetch(OCR_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ imageData: imageDataURL }),
+      signal: controller.signal
+    });
+
+    clearTimeout(timeoutId);
+
+    // Handle network/timeout errors
+    if (!response.ok) {
+      const errorText = await response.text().catch(() => '');
+      let errorData = {};
+      try { errorData = JSON.parse(errorText); } catch (e) {}
+      const errorMsg = errorData.error || errorText || `HTTP ${response.status}`;
+
+      if (response.status === 404) {
+        throw new Error('OCR function not found. Ensure Netlify Functions are deployed.');
+      } else if (response.status === 500) {
+        throw new Error('Server error: ' + errorMsg);
+      } else if (response.status === 413) {
+        throw new Error('Image file is too large (max 20MB)');
+      } else {
+        throw new Error(errorMsg);
+      }
+    }
+
+    // Parse response
+    let data;
+    try {
+      data = await response.json();
+    } catch (e) {
+      throw new Error('Invalid response from OCR service');
+    }
+
+    console.log('[ocr] OCR service response:', data);
+    // Check API response status
+    if (!data.success) {
+      throw new Error(data.error || 'OCR service returned an error');
+    }
+
+    // Validate text extraction result
+    const extractedText = data.text || '';
+    
+    if (!extractedText.trim()) {
+      console.warn('Warning: No text detected in image');
+      return '';
+    }
+
+    loaderSub.textContent = 'Processing complete…';
+    return extractedText;
+
+  } catch (err) {
+    loaderSub.textContent = originalText;
+    
+    if (err.name === 'AbortError') {
+      throw new Error('Request timeout. Image processing took too long.');
+    }
+    
+    if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
+      throw new Error('Network error. Check your connection and ensure OCR endpoint is available.');
+    }
+    
+    throw err;
+  }
+}
+
+function renderEditor(text) {
+  document.getElementById('ocrLoader').style.display = 'none';
+  document.getElementById('editorLayout').style.display = 'grid';
+  document.getElementById('editorImg').src = appState.imageDataURLs[0] || '';
+  document.getElementById('examEditor').value = text || '';
+  updateHeaderDisplay();
+  showToast('Text extracted successfully!', 'success');
+}
+
+/* ================================================================
+   HEADER DISPLAY UPDATE
+   ================================================================ */
+function updateHeaderDisplay() {
+  const d = appState.details;
+  if (!d.term) return;
+
+  document.getElementById('hdrTermSession').textContent =
+    `${d.term} EXAMINATION, ${d.session} ACADEMIC SESSION`;
+  document.getElementById('hdrSubject').textContent   = `SUBJECT: ${d.subject}`;
+  document.getElementById('hdrClass').textContent     = `CLASS: ${d.cls}`;
+  document.getElementById('hdrDuration').textContent  = `DURATION: ${d.duration}`;
+}
+
+/* ================================================================
+   AI CLEANUP TOOLS
+   ================================================================ */
+function aiCleanup() {
+  const editor = document.getElementById('examEditor');
+  let text = editor.value;
+  if (!text.trim()) return showToast('Nothing to clean up.', 'info');
+
+  text = fixNumberingLogic(text);
+  text = fixPunctuation(text);
+  text = removeExtraSpacesLogic(text);
+
+  editor.value = text;
+  showToast('✨ AI Cleanup complete! Numbering, spacing, and punctuation fixed.', 'success');
+}
+
+function fixNumbering() {
+  const editor = document.getElementById('examEditor');
+  editor.value = fixNumberingLogic(editor.value);
+  showToast('Question numbering fixed.', 'success');
+}
+
+function fixNumberingLogic(text) {
+  let counter = 1;
+  // Replace patterns like "1 ", "1)", "1-", "(1)" at start of line
+  return text.replace(/^[\s]*(\(?\d+[\.\)\-\s])\s*/gm, () => `${counter++}. `);
+}
+
+function fixPunctuation(text) {
+  const lines = text.split('\n');
+  return lines.map(line => {
+    line = line.trim();
+    if (!line) return '';
+    // Add question mark if line is a question and doesn't end with punctuation
+    const questionWords = /^(what|where|when|who|why|how|which|mention|list|name|state|define|explain|describe|calculate|identify|differentiate|compare|discuss|outline|enumerate)/i;
+    if (questionWords.test(line.replace(/^\d+\.\s*/, '')) && !/[?.!:;]$/.test(line)) {
+      line += '.';
+    }
+    // Capitalize first letter of question body
+    line = line.replace(/^(\d+\.\s*)([a-z])/, (m, num, char) => num + char.toUpperCase());
+    return line;
+  }).join('\n');
+}
+
+function removeExtraSpaces() {
+  document.getElementById('examEditor').value =
+    removeExtraSpacesLogic(document.getElementById('examEditor').value);
+  showToast('Extra spaces removed.', 'success');
+}
+
+function removeExtraSpacesLogic(text) {
+  return text
+    .replace(/[ \t]{2,}/g, ' ')         // multiple spaces → single
+    .replace(/\n{3,}/g, '\n\n')          // triple+ newlines → double
+    .split('\n').map(l => l.trim()).join('\n'); // trim each line
+}
+
+function addQuestion() {
+  const editor = document.getElementById('examEditor');
+  const lines = editor.value.split('\n').filter(l => l.trim());
+  // Find next question number
+  let maxNum = 0;
+  lines.forEach(l => {
+    const m = l.match(/^(\d+)\./);
+    if (m) maxNum = Math.max(maxNum, parseInt(m[1]));
+  });
+  editor.value += `\n${maxNum + 1}. `;
+  editor.focus();
+  editor.selectionStart = editor.selectionEnd = editor.value.length;
+}
+
+function clearEditor() {
+  if (confirm('Clear all extracted text? This cannot be undone.')) {
+    document.getElementById('examEditor').value = '';
+  }
+}
+
+/* ================================================================
+   STEP 4: PREVIEW
+   ========
+   ======================================================== */
+function goToPreview() {
+  const text = document.getElementById('examEditor').value.trim();
+  if (!text) return showToast('Please add some content to the editor.', 'error');
+
+  const d = appState.details;
+  document.getElementById('pvTermSession').textContent =
+    `${d.term} EXAMINATION — ${d.session} ACADEMIC SESSION`;
+  document.getElementById('pvSubject').textContent  = `SUBJECT: ${d.subject}`;
+  document.getElementById('pvClass').textContent    = `CLASS: ${d.cls}`;
+  document.getElementById('pvDuration').textContent = `DURATION: ${d.duration}`;
+  document.getElementById('pvBody').textContent     = text;
+
+  goToStep(4);
+}
+
+/* ================================================================
+   EXPORT FUNCTIONS
+   ================================================================ */
+function printPaper() {
+  window.print();
+}
+
+function downloadPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const d = appState.details;
+  const margin = 20;
+  const pageW  = 210;
+  const lineW  = pageW - margin * 2;
+
+  // Font defaults
+  doc.setFont('times', 'bold');
+
+  // School name
+  doc.setFontSize(13);
+  doc.text('GREAT TURNING POINT INTERNATIONAL SCHOOL', pageW / 2, 24, { align: 'center' });
+
+  // Address
+  doc.setFont('times', 'normal');
+  doc.setFontSize(10);
+  doc.text('UMUODE, OSISIOMA NGWA L.G.A, ABIA STATE', pageW / 2, 31, { align: 'center' });
+
+  // Term / Session
+  doc.setFont('times', 'bold');
+  doc.setFontSize(11);
+  doc.text(`${d.term} EXAMINATION, ${d.session} ACADEMIC SESSION`, pageW / 2, 39, { align: 'center' });
+
+  // Divider
+  doc.setDrawColor(27, 42, 94);
+  doc.setLineWidth(0.6);
+  doc.line(margin, 43, pageW - margin, 43);
+
+  // Meta row
+  doc.setFontSize(10);
+  doc.text(`SUBJECT: ${d.subject}`, margin, 50);
+  doc.text(`CLASS: ${d.cls}`, pageW / 2, 50, { align: 'center' });
+  doc.text(`DURATION: ${d.duration}`, pageW - margin, 50, { align: 'right' });
+
+  doc.setLineWidth(0.3);
+  doc.line(margin, 54, pageW - margin, 54);
+
+  // Body text
+  doc.setFont('times', 'normal');
+  doc.setFontSize(11);
+  const bodyText = document.getElementById('examEditor').value;
+  const lines = doc.splitTextToSize(bodyText, lineW);
+
+  let y = 62;
+  const lineH = 6.5;
+  lines.forEach(line => {
+    if (y > 275) {
+      doc.addPage();
+      y = 20;
+    }
+    doc.text(line, margin, y);
+    y += lineH;
+  });
+
+  const filename = `${d.subject.replace(/\s+/g,'-')}_${d.cls.replace(/\s+/g,'-')}_${d.term.replace(/\s+/g,'-')}_${d.session}.pdf`;
+  doc.save(filename);
+  showToast('PDF downloaded successfully!', 'success');
+}
+
+function copyText() {
+  const d = appState.details;
+  const header = [
+    'GREAT TURNING POINT INTERNATIONAL SCHOOL',
+    'UMUODE, OSISIOMA NGWA L.G.A, ABIA STATE',
+    `${d.term} EXAMINATION, ${d.session} ACADEMIC SESSION`,
+    `SUBJECT: ${d.subject}`,
+    `CLASS: ${d.cls}`,
+    `DURATION: ${d.duration}`,
+    '',
+    document.getElementById('examEditor').value
+  ].join('\n');
+
+  navigator.clipboard.writeText(header).then(() => {
+    showToast('Examination text copied to clipboard!', 'success');
+  }).catch(() => {
+    showToast('Copy failed. Please select and copy manually.', 'error');
+  });
+}
+
+function copyExtractedText() {
+  const text = document.getElementById('examEditor').value;
+  if (!text.trim()) {
+    return showToast('There is no extracted text to copy.', 'info');
+  }
+
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('Extracted text copied to clipboard!', 'success');
+  }).catch(() => {
+    showToast('Copy failed. Please select and copy manually.', 'error');
+  });
+}
+
+/* ================================================================
+   START NEW
+   ================================================================ */
+function startNew() {
+  if (!confirm('Start a new examination? Current work will be lost.')) return;
+  appState = { currentStep: 1, imageFiles: [], imageDataURLs: [], extractedText: '', details: {} };
+  document.getElementById('examEditor').value = '';
+  document.getElementById('previewGrid').innerHTML = '';
+  document.getElementById('previewStrip').style.display = 'none';
+  document.getElementById('extractBtn').style.display = 'none';
+  document.getElementById('fileInput').value = '';
+  goToStep(1);
+}
+
+/* ================================================================
+   TOAST
+   ================================================================ */
+function showToast(msg, type = 'info') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = `toast ${type} show`;
+  clearTimeout(t._timer);
+  t._timer = setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+/* ================================================================
+   INIT
+   ================================================================ */
+// Set current session default (academic year starting this calendar year)
+(function setDefaultSession() {
+  const year = new Date().getFullYear();
+  const session = `${year}/${year + 1}`;
+  const sel = document.getElementById('examSession');
+  for (let opt of sel.options) {
+    if (opt.value === session) { opt.selected = true; return; }
+  }
+})();
+</script>
+</body>
+</html>
