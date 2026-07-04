@@ -12,30 +12,33 @@
    DESIGN TOKENS
    ============================================================ */
 :root {
-  --navy:       #1B2A5E;   /* institutional anchor */
-  --navy-deep:  #0F1A3D;
-  --gold:       #C9921A;   /* warm amber-gold accent */
-  --gold-light: #F5C842;
-  --cream:      #F7F5F0;   /* warm neutral background */
+  --navy:       #1746A2;   /* academic blue */
+  --navy-deep:  #09214F;
+  --gold:       #F59E0B;   /* achievement accent */
+  --gold-light: #FDE68A;
+  --cream:      #F5F7FB;
   --white:      #FFFFFF;
-  --slate:      #4A5568;
-  --mist:       #E8E6E1;
-  --text:       #1A1A2E;
-  --success:    #16A34A;
-  --error:      #DC2626;
+  --teal:       #14B8A6;
+  --coral:      #F97316;
+  --ink:        #0F172A;
+  --slate:      #64748B;
+  --mist:       #D9E2EF;
+  --text:       #111827;
+  --success:    #10B981;
+  --error:      #EF4444;
 
   --radius-sm:  6px;
-  --radius-md:  12px;
-  --radius-lg:  20px;
-  --shadow-sm:  0 2px 8px rgba(27,42,94,0.08);
-  --shadow-md:  0 6px 24px rgba(27,42,94,0.12);
-  --shadow-lg:  0 16px 48px rgba(27,42,94,0.16);
+  --radius-md:  8px;
+  --radius-lg:  8px;
+  --shadow-sm:  0 4px 12px rgba(15,23,42,0.08);
+  --shadow-md:  0 12px 32px rgba(15,23,42,0.12);
+  --shadow-lg:  0 24px 60px rgba(15,23,42,0.18);
 
   --font-display: 'Playfair Display', Georgia, serif;
   --font-body:    'Inter', system-ui, sans-serif;
   --font-mono:    'JetBrains Mono', monospace;
 
-  --transition: 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition: 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -227,7 +230,7 @@ label {
   letter-spacing: 0.8px;
 }
 
-select, input[type="text"] {
+select, input[type="text"], textarea {
   font-family: var(--font-body);
   font-size: 0.92rem;
   padding: 11px 14px;
@@ -255,13 +258,84 @@ select:focus, input[type="text"]:focus {
   box-shadow: 0 0 0 3px rgba(201,146,26,0.12);
 }
 
+textarea {
+  background-image: none;
+  padding-right: 14px;
+}
+
+textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201,146,26,0.12);
+}
+
 /* ============================================================
    UPLOAD ZONE
    ============================================================ */
+.source-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.source-card {
+  min-height: 132px;
+  padding: 20px 18px;
+  border: 1.5px solid var(--mist);
+  border-radius: var(--radius-md);
+  background: white;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-body);
+  transition: all var(--transition);
+}
+
+.source-card:hover {
+  border-color: var(--gold);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.source-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+  background: var(--cream);
+  color: var(--navy);
+  font-size: 1.35rem;
+}
+
+.source-title {
+  display: block;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+
+.source-desc {
+  display: block;
+  font-size: 0.8rem;
+  color: var(--slate);
+  line-height: 1.45;
+}
+
+.hidden-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
 .upload-zone {
   border: 2.5px dashed var(--mist);
   border-radius: var(--radius-lg);
-  padding: 60px 32px;
+  padding: 34px 28px;
   text-align: center;
   cursor: pointer;
   transition: all var(--transition);
@@ -274,18 +348,9 @@ select:focus, input[type="text"]:focus {
   background: rgba(201,146,26,0.04);
 }
 
-.upload-zone input[type="file"] {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  cursor: pointer;
-  width: 100%;
-  height: 100%;
-}
-
 .upload-icon {
-  font-size: 3rem;
-  margin-bottom: 16px;
+  font-size: 2.4rem;
+  margin-bottom: 12px;
   display: block;
 }
 
@@ -318,6 +383,105 @@ select:focus, input[type="text"]:focus {
   border-radius: 4px;
   letter-spacing: 1px;
   font-family: var(--font-mono);
+}
+
+.text-entry-panel {
+  display: none;
+  margin-top: 18px;
+  padding: 18px;
+  border: 1.5px solid var(--mist);
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.text-entry-panel.show {
+  display: block;
+}
+
+.text-entry-panel textarea {
+  width: 100%;
+  min-height: 190px;
+  resize: vertical;
+  background: var(--cream);
+  line-height: 1.6;
+}
+
+.text-entry-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.camera-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 26, 61, 0.82);
+  z-index: 10000;
+  padding: 24px;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-overlay.show {
+  display: flex;
+}
+
+.camera-panel {
+  width: min(760px, 100%);
+  background: white;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+
+.camera-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  background: var(--navy);
+  color: white;
+}
+
+.camera-title {
+  font-weight: 700;
+  font-size: 0.92rem;
+}
+
+.camera-close {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  color: white;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+.camera-body {
+  background: #0f172a;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-body video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #0f172a;
+}
+
+.camera-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  padding: 16px;
+  flex-wrap: wrap;
 }
 
 /* ============================================================
@@ -715,6 +879,73 @@ select:focus, input[type="text"]:focus {
 }
 .export-copy:hover { border-color: var(--navy); transform: translateY(-2px); }
 
+.export-share {
+  background: var(--navy-deep);
+  color: white;
+  box-shadow: var(--shadow-sm);
+}
+.export-share:hover { background: var(--navy); transform: translateY(-2px); }
+
+.share-action {
+  position: relative;
+}
+
+.share-menu {
+  display: none;
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  min-width: 210px;
+  background: white;
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-lg);
+  padding: 8px;
+  z-index: 20;
+}
+
+.share-menu.show {
+  display: grid;
+  gap: 6px;
+}
+
+.share-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 10px 12px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--navy);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: left;
+}
+
+.share-option:hover {
+  background: var(--cream);
+}
+
+.share-option-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 0.76rem;
+}
+
+.share-option-icon.whatsapp { background: #128C7E; }
+.share-option-icon.email { background: var(--gold); color: var(--navy-deep); }
+
 /* ============================================================
    TOAST NOTIFICATIONS
    ============================================================ */
@@ -759,7 +990,10 @@ select:focus, input[type="text"]:focus {
   .school-badge { display: none; }
   .main { padding: 24px 16px 60px; }
   .card { padding: 24px 20px; }
+  .workflow-hero { align-items: flex-start; flex-direction: column; }
+  .workflow-pills { justify-content: flex-start; }
   .editor-layout { grid-template-columns: 1fr; }
+  .source-options { grid-template-columns: 1fr; }
   .preview-paper { padding: 32px 28px; }
   .steps-bar { padding: 0 16px; }
   .step-tab { padding: 12px 14px; font-size: 0.72rem; }
@@ -794,6 +1028,442 @@ select:focus, input[type="text"]:focus {
   border-radius: 2px;
   transition: width 0.5s ease;
 }
+
+/* ============================================================
+   MODERN ACADEMIC THEME
+   ============================================================ */
+body {
+  background:
+    linear-gradient(135deg, rgba(23,70,162,0.08) 0%, rgba(20,184,166,0.08) 36%, rgba(245,158,11,0.08) 100%),
+    linear-gradient(90deg, rgba(23,70,162,0.05) 1px, transparent 1px),
+    linear-gradient(180deg, rgba(23,70,162,0.05) 1px, transparent 1px),
+    #F8FAFC;
+  background-size: auto, 44px 44px, 44px 44px, auto;
+}
+
+.app-header {
+  background: rgba(9, 33, 79, 0.94);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(255,255,255,0.12);
+  box-shadow: 0 12px 32px rgba(9,33,79,0.24);
+}
+
+.logo-icon {
+  background: linear-gradient(135deg, var(--teal), var(--gold));
+  box-shadow: 0 10px 24px rgba(20,184,166,0.24);
+  transform: rotate(-3deg);
+  transition: transform var(--transition);
+}
+
+.logo-mark:hover .logo-icon {
+  transform: rotate(0deg) scale(1.06);
+}
+
+.logo-text {
+  font-family: var(--font-body);
+  font-weight: 800;
+  letter-spacing: 0;
+}
+
+.logo-text span { color: #7DD3FC; }
+
+.tagline {
+  color: rgba(255,255,255,0.68);
+  letter-spacing: 1.5px;
+}
+
+.school-badge {
+  background: rgba(20,184,166,0.13);
+  border-color: rgba(125,211,252,0.35);
+  color: #E0F2FE;
+}
+
+.steps-bar {
+  background: rgba(255,255,255,0.78);
+  backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(217,226,239,0.9);
+  box-shadow: 0 8px 26px rgba(15,23,42,0.06);
+}
+
+.step-tab {
+  color: var(--slate);
+  border-bottom-width: 3px;
+}
+
+.step-tab:hover {
+  color: var(--navy);
+  background: rgba(23,70,162,0.05);
+}
+
+.step-tab.active {
+  color: var(--navy);
+  border-bottom-color: var(--teal);
+}
+
+.step-tab.done {
+  color: #0F766E;
+}
+
+.step-num {
+  background: #EAF2FF;
+  color: var(--navy);
+}
+
+.step-tab.active .step-num {
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+  color: white;
+  box-shadow: 0 8px 18px rgba(23,70,162,0.25);
+}
+
+.step-tab.done .step-num {
+  background: var(--success);
+}
+
+.main {
+  max-width: 1180px;
+  padding-top: 46px;
+}
+
+.card {
+  border: 1px solid rgba(217,226,239,0.92);
+  box-shadow: var(--shadow-md);
+  position: relative;
+  overflow: hidden;
+  animation: slideUp 0.5s ease both;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: linear-gradient(90deg, var(--navy), var(--teal), var(--gold));
+}
+
+.card-title {
+  font-family: var(--font-body);
+  font-weight: 800;
+  color: var(--ink);
+  letter-spacing: 0;
+}
+
+.card-subtitle {
+  color: var(--slate);
+  max-width: 760px;
+}
+
+.workflow-hero {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  padding: 18px 20px;
+  margin-bottom: 28px;
+  border: 1px solid rgba(20,184,166,0.22);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(23,70,162,0.94), rgba(20,184,166,0.9)),
+    var(--navy);
+  color: white;
+  box-shadow: 0 16px 36px rgba(23,70,162,0.2);
+}
+
+.workflow-kicker {
+  display: inline-block;
+  margin-bottom: 4px;
+  color: var(--gold-light);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+}
+
+.workflow-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  line-height: 1.35;
+}
+
+.workflow-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.workflow-pills span {
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255,255,255,0.16);
+  border: 1px solid rgba(255,255,255,0.22);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+label {
+  color: var(--ink);
+  letter-spacing: 0.55px;
+}
+
+select, input[type="text"], textarea {
+  background-color: #F8FAFC;
+  border-color: #D8E2F0;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
+select:hover, input[type="text"]:hover, textarea:hover {
+  border-color: rgba(23,70,162,0.35);
+}
+
+select:focus, input[type="text"]:focus, textarea:focus {
+  border-color: var(--teal);
+  box-shadow: 0 0 0 4px rgba(20,184,166,0.14);
+}
+
+.source-card {
+  border-color: rgba(217,226,239,0.9);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.98), rgba(248,250,252,0.98));
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+.source-card::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--navy), var(--teal), var(--gold));
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--transition);
+}
+
+.source-card:hover {
+  border-color: rgba(20,184,166,0.55);
+  transform: translateY(-4px);
+  box-shadow: 0 18px 38px rgba(15,23,42,0.12);
+}
+
+.source-card:hover::after {
+  transform: scaleX(1);
+}
+
+.source-icon {
+  background: linear-gradient(135deg, rgba(23,70,162,0.12), rgba(20,184,166,0.16));
+  color: var(--navy);
+}
+
+.source-card:nth-child(2) .source-icon {
+  background: rgba(245,158,11,0.16);
+  color: #B45309;
+}
+
+.source-card:nth-child(3) .source-icon {
+  background: rgba(249,115,22,0.14);
+  color: #C2410C;
+}
+
+.upload-zone {
+  background:
+    linear-gradient(135deg, rgba(23,70,162,0.04), rgba(20,184,166,0.06)),
+    #FFFFFF;
+  border-color: rgba(23,70,162,0.18);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8);
+}
+
+.upload-zone:hover, .upload-zone.drag-over {
+  border-color: var(--teal);
+  background: rgba(20,184,166,0.07);
+  transform: translateY(-2px);
+}
+
+.format-chip {
+  background: #EAF2FF;
+  color: var(--navy);
+}
+
+.text-entry-panel,
+.preview-strip,
+.editor-panel {
+  border-color: rgba(217,226,239,0.9);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn,
+.export-btn,
+.tool-btn,
+.camera-close,
+.source-card {
+  will-change: transform;
+}
+
+.btn {
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+  color: white;
+  box-shadow: 0 12px 24px rgba(23,70,162,0.22);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 34px rgba(20,184,166,0.26);
+}
+
+.btn-navy {
+  background: linear-gradient(135deg, var(--ink), var(--navy));
+}
+
+.btn-outline {
+  background: white;
+  border-color: #D8E2F0;
+  color: var(--ink);
+}
+
+.btn-outline:hover {
+  border-color: var(--teal);
+  color: var(--navy);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+
+.spinner {
+  border-color: rgba(20,184,166,0.16);
+  border-top-color: var(--teal);
+  box-shadow: 0 0 0 8px rgba(20,184,166,0.06);
+}
+
+.panel-header {
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+}
+
+.editor-toolbar {
+  background: #F8FAFC;
+}
+
+.tool-btn {
+  background: white;
+  border-color: #D8E2F0;
+}
+
+.tool-btn:hover {
+  background: var(--ink);
+  border-color: var(--ink);
+  transform: translateY(-1px);
+}
+
+.exam-editor {
+  background:
+    linear-gradient(#ffffff 31px, rgba(23,70,162,0.05) 32px),
+    #ffffff;
+  background-size: 100% 32px;
+}
+
+.exam-header-block {
+  background: linear-gradient(180deg, #FFFFFF, #F8FAFC) !important;
+}
+
+.preview-paper {
+  border: 1px solid rgba(217,226,239,0.9);
+  box-shadow: 0 28px 70px rgba(15,23,42,0.16);
+}
+
+.preview-paper::before {
+  background: linear-gradient(90deg, var(--navy), var(--teal), var(--gold));
+}
+
+.export-btn {
+  background: white;
+  box-shadow: var(--shadow-sm);
+  border: 1px solid rgba(217,226,239,0.9);
+}
+
+.export-btn:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 18px 36px rgba(15,23,42,0.14);
+}
+
+.export-print {
+  background: linear-gradient(135deg, var(--ink), var(--navy));
+}
+
+.export-pdf {
+  background: linear-gradient(135deg, var(--gold), #FDBA74);
+}
+
+.export-copy {
+  background: #FFFFFF;
+}
+
+.export-share {
+  background: linear-gradient(135deg, var(--teal), var(--navy));
+}
+
+.share-menu {
+  border-color: rgba(217,226,239,0.95);
+  animation: menuPop 0.18s ease both;
+}
+
+@keyframes menuPop {
+  from { opacity: 0; transform: translate(-50%, -6px) scale(0.98); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+.share-option:hover {
+  background: #F0FDFA;
+}
+
+.camera-overlay.show {
+  animation: fadeIn 0.18s ease both;
+}
+
+.camera-panel {
+  animation: modalRise 0.24s ease both;
+}
+
+.camera-header {
+  background: linear-gradient(135deg, var(--navy), var(--teal));
+}
+
+.toast {
+  background: rgba(15,23,42,0.96);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 18px 44px rgba(15,23,42,0.22);
+}
+
+.progress-bar-wrap {
+  height: 6px;
+  background: #E8EEF8;
+}
+
+.progress-bar-fill {
+  background: linear-gradient(90deg, var(--navy), var(--teal), var(--gold));
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalRise {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
 </style>
 </head>
 <body>
@@ -818,7 +1488,7 @@ select:focus, input[type="text"]:focus {
     <div class="step-num">1</div> Exam Details
   </div>
   <div class="step-tab" data-step="2">
-    <div class="step-num">2</div> Upload Image
+    <div class="step-num">2</div> Add Content
   </div>
   <div class="step-tab" data-step="3">
     <div class="step-num">3</div> Extract & Edit
@@ -839,6 +1509,18 @@ select:focus, input[type="text"]:focus {
 
       <div class="progress-bar-wrap">
         <div class="progress-bar-fill" style="width:25%"></div>
+      </div>
+
+      <div class="workflow-hero">
+        <div>
+          <span class="workflow-kicker">Teacher workflow</span>
+          <div class="workflow-title">Snap handwritten exam pages and turn them into editable papers.</div>
+        </div>
+        <div class="workflow-pills">
+          <span>Camera OCR</span>
+          <span>Edit</span>
+          <span>Share</span>
+        </div>
       </div>
 
       <div class="form-grid">
@@ -956,27 +1638,57 @@ select:focus, input[type="text"]:focus {
   <!-- STEP 2: UPLOAD IMAGE -->
   <div class="section" id="step2">
     <div class="card">
-      <div class="card-title">Upload Question Paper Image</div>
-      <div class="card-subtitle">Take a photo or upload a scan of the examination questions. We'll convert it to editable text.</div>
+      <div class="card-title">Add Question Content</div>
+      <div class="card-subtitle">Use your camera, upload an image, or paste existing text. We'll prepare it for editing.</div>
 
       <div class="progress-bar-wrap">
         <div class="progress-bar-fill" style="width:50%"></div>
       </div>
 
+      <input class="hidden-input" type="file" id="uploadInput" accept=".jpg,.jpeg,.png,.webp,image/*"
+             multiple onchange="handleFileSelect(event)" />
+      <input class="hidden-input" type="file" id="textFileInput" accept=".txt,text/plain"
+             onchange="handleTextFileSelect(event)" />
+
+      <div class="source-options" aria-label="Choose content source">
+        <button type="button" class="source-card" onclick="openCameraInput()">
+          <span class="source-icon">📷</span>
+          <span class="source-title">Use Camera</span>
+          <span class="source-desc">Capture a page with your phone or device camera.</span>
+        </button>
+        <button type="button" class="source-card" onclick="openUploadInput()">
+          <span class="source-icon">⇧</span>
+          <span class="source-title">Upload Image</span>
+          <span class="source-desc">Choose JPG, PNG, or WEBP scans from mobile or desktop.</span>
+        </button>
+        <button type="button" class="source-card" onclick="toggleTextEntry()">
+          <span class="source-icon">T</span>
+          <span class="source-title">Upload Text</span>
+          <span class="source-desc">Paste typed questions or import a plain text file.</span>
+        </button>
+      </div>
+
       <div class="upload-zone" id="uploadZone"
+           onclick="openUploadInput()"
            ondragover="handleDragOver(event)"
            ondragleave="handleDragLeave(event)"
            ondrop="handleDrop(event)">
-        <input type="file" id="fileInput" accept=".jpg,.jpeg,.png,.webp,image/*"
-               multiple capture="environment" onchange="handleFileSelect(event)" />
-        <span class="upload-icon">📸</span>
+        <span class="upload-icon">▦</span>
         <div class="upload-primary">Drag & drop up to 5 images here</div>
-        <div class="upload-secondary">or click to browse / use camera</div>
+        <div class="upload-secondary">or click here to browse your device</div>
         <div class="upload-formats">
           <span class="format-chip">JPG</span>
           <span class="format-chip">JPEG</span>
           <span class="format-chip">PNG</span>
           <span class="format-chip">WEBP</span>
+        </div>
+      </div>
+
+      <div class="text-entry-panel" id="textEntryPanel">
+        <textarea id="directTextInput" placeholder="Paste or type the examination questions here..."></textarea>
+        <div class="text-entry-actions">
+          <button type="button" class="btn btn-outline btn-sm" onclick="openTextFileInput()">Upload .TXT</button>
+          <button type="button" class="btn btn-primary btn-sm" onclick="useDirectText()">Use This Text</button>
         </div>
       </div>
 
@@ -1097,6 +1809,22 @@ select:focus, input[type="text"]:focus {
           <span class="icon">📋</span>
           <span class="label">Copy Text</span>
         </button>
+        <div class="share-action">
+          <button class="export-btn export-share" onclick="toggleShareMenu(event)" aria-haspopup="true" aria-expanded="false" id="shareButton">
+            <span class="icon">↗</span>
+            <span class="label">Share</span>
+          </button>
+          <div class="share-menu" id="shareMenu" role="menu" aria-label="Share paper">
+            <a class="share-option" id="whatsappShareLink" href="#" target="_blank" rel="noopener" onclick="return openShareTarget(event, 'whatsapp')" role="menuitem">
+              <span class="share-option-icon whatsapp">W</span>
+              <span>Share with WhatsApp</span>
+            </a>
+            <a class="share-option" id="emailShareLink" href="#" onclick="return openShareTarget(event, 'email')" role="menuitem">
+              <span class="share-option-icon email">@</span>
+              <span>Share by Email</span>
+            </a>
+          </div>
+        </div>
       </div>
 
       <div class="btn-row" style="justify-content:center; margin-top:20px;">
@@ -1110,6 +1838,24 @@ select:focus, input[type="text"]:focus {
 
 <!-- Toast -->
 <div class="toast" id="toast"></div>
+
+<!-- Camera Capture -->
+<div class="camera-overlay" id="cameraOverlay" aria-hidden="true">
+  <div class="camera-panel" role="dialog" aria-modal="true" aria-label="Camera capture">
+    <div class="camera-header">
+      <div class="camera-title">Capture Question Paper</div>
+      <button type="button" class="camera-close" onclick="closeCamera()" aria-label="Close camera">×</button>
+    </div>
+    <div class="camera-body">
+      <video id="cameraVideo" autoplay playsinline muted></video>
+      <canvas id="cameraCanvas" style="display:none;"></canvas>
+    </div>
+    <div class="camera-actions">
+      <button type="button" class="btn btn-outline" onclick="closeCamera()">Cancel</button>
+      <button type="button" class="btn btn-primary" onclick="captureCameraImage()">Capture Photo</button>
+    </div>
+  </div>
+</div>
 
 <!-- Print Styles -->
 <style id="printStyles">
@@ -1138,6 +1884,7 @@ select:focus, input[type="text"]:focus {
    STATE
    ================================================================ */
 const MAX_IMAGE_UPLOADS = 5;
+let cameraStream = null;
 
 let appState = {
   currentStep: 1,
@@ -1204,6 +1951,96 @@ function handleSubjectChange(sel) {
 /* ================================================================
    STEP 2: IMAGE UPLOAD
    ================================================================ */
+async function openCameraInput() {
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    showToast('Camera access is not available in this browser. Try Chrome, Edge, or Safari over HTTPS.', 'error');
+    return;
+  }
+
+  if (appState.imageDataURLs.length >= MAX_IMAGE_UPLOADS) {
+    showToast(`You can capture up to ${MAX_IMAGE_UPLOADS} images only.`, 'error');
+    return;
+  }
+
+  try {
+    const overlay = document.getElementById('cameraOverlay');
+    const video = document.getElementById('cameraVideo');
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden', 'false');
+
+    cameraStream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1600 },
+        height: { ideal: 1200 }
+      },
+      audio: false
+    });
+
+    video.srcObject = cameraStream;
+    await video.play();
+  } catch (err) {
+    closeCamera();
+    console.error('[camera] Unable to open camera:', err);
+    showToast('Camera permission was denied or no camera was found.', 'error');
+  }
+}
+
+function closeCamera() {
+  const overlay = document.getElementById('cameraOverlay');
+  const video = document.getElementById('cameraVideo');
+
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+
+  video.srcObject = null;
+  overlay.classList.remove('show');
+  overlay.setAttribute('aria-hidden', 'true');
+}
+
+function captureCameraImage() {
+  const video = document.getElementById('cameraVideo');
+  if (!video.videoWidth || !video.videoHeight) {
+    showToast('Camera is still starting. Please try again in a moment.', 'info');
+    return;
+  }
+
+  if (appState.imageDataURLs.length >= MAX_IMAGE_UPLOADS) {
+    closeCamera();
+    showToast(`You can capture up to ${MAX_IMAGE_UPLOADS} images only.`, 'error');
+    return;
+  }
+
+  const canvas = document.getElementById('cameraCanvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+  const dataURL = canvas.toDataURL('image/jpeg', 0.92);
+  addImageDataURLs([dataURL]);
+  closeCamera();
+  showToast('Camera photo captured. Click Extract Text to proceed.', 'success');
+}
+
+function openUploadInput() {
+  document.getElementById('uploadInput').click();
+}
+
+function openTextFileInput() {
+  document.getElementById('textFileInput').click();
+}
+
+function toggleTextEntry() {
+  const panel = document.getElementById('textEntryPanel');
+  panel.classList.toggle('show');
+  if (panel.classList.contains('show')) {
+    document.getElementById('directTextInput').focus();
+  }
+}
+
 function handleDragOver(e) {
   e.preventDefault();
   document.getElementById('uploadZone').classList.add('drag-over');
@@ -1215,6 +2052,7 @@ function handleDragLeave(e) {
 
 function handleDrop(e) {
   e.preventDefault();
+  e.stopPropagation();
   document.getElementById('uploadZone').classList.remove('drag-over');
   const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
   if (files.length) {
@@ -1231,12 +2069,48 @@ function handleFileSelect(e) {
   } else {
     showToast('Please choose one or more image files (JPG, PNG, WEBP).', 'error');
   }
+  e.target.value = '';
+}
+
+function handleTextFileSelect(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+
+  if (file.type && file.type !== 'text/plain') {
+    showToast('Please upload a plain .txt file.', 'error');
+    e.target.value = '';
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = event => {
+    document.getElementById('directTextInput').value = event.target.result || '';
+    document.getElementById('textEntryPanel').classList.add('show');
+    showToast('Text file loaded. Review it, then continue.', 'success');
+  };
+  reader.onerror = () => showToast('Unable to read this text file.', 'error');
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function useDirectText() {
+  const text = document.getElementById('directTextInput').value.trim();
+  if (!text) return showToast('Please paste or upload text first.', 'error');
+
+  appState.imageFiles = [];
+  appState.imageDataURLs = [];
+  appState.extractedText = text;
+  document.getElementById('previewGrid').innerHTML = '';
+  document.getElementById('previewStrip').style.display = 'none';
+  document.getElementById('extractBtn').style.display = 'none';
+  goToStep(3);
+  renderEditor(text, 'Text loaded successfully!');
 }
 
 function loadImageFiles(files) {
   if (files.length > MAX_IMAGE_UPLOADS) {
     showToast(`Please select up to ${MAX_IMAGE_UPLOADS} images only.`, 'error');
-    document.getElementById('fileInput').value = '';
+    clearSourceInputs();
     return;
   }
 
@@ -1251,10 +2125,7 @@ function loadImageFiles(files) {
   })))
     .then(imageDataURLs => {
       appState.imageFiles = selected;
-      appState.imageDataURLs = imageDataURLs;
-      renderPreviewGrid(imageDataURLs);
-      document.getElementById('previewStrip').style.display = 'block';
-      document.getElementById('extractBtn').style.display = 'inline-flex';
+      addImageDataURLs(imageDataURLs, false);
       console.log('[ocr] Images loaded:', selected.map(f => f.name));
       showToast(`${imageDataURLs.length} image(s) loaded. Click "Extract Text" to proceed.`, 'info');
     })
@@ -1262,6 +2133,22 @@ function loadImageFiles(files) {
       console.error('[ocr] Failed to load images', err);
       showToast('Unable to load one or more images. Please try again.', 'error');
     });
+}
+
+function addImageDataURLs(imageDataURLs, append = true) {
+  const nextImages = append
+    ? [...appState.imageDataURLs, ...imageDataURLs]
+    : imageDataURLs;
+
+  if (nextImages.length > MAX_IMAGE_UPLOADS) {
+    showToast(`Please use up to ${MAX_IMAGE_UPLOADS} images only.`, 'error');
+    return;
+  }
+
+  appState.imageDataURLs = nextImages;
+  renderPreviewGrid(appState.imageDataURLs);
+  document.getElementById('previewStrip').style.display = 'block';
+  document.getElementById('extractBtn').style.display = 'inline-flex';
 }
 
 function renderPreviewGrid(imageDataURLs) {
@@ -1286,7 +2173,14 @@ function removeImage() {
   document.getElementById('previewGrid').innerHTML = '';
   document.getElementById('previewStrip').style.display = 'none';
   document.getElementById('extractBtn').style.display = 'none';
-  document.getElementById('fileInput').value = '';
+  clearSourceInputs();
+}
+
+function clearSourceInputs() {
+  ['uploadInput', 'textFileInput'].forEach(id => {
+    const input = document.getElementById(id);
+    if (input) input.value = '';
+  });
 }
 
 /* ================================================================
@@ -1340,9 +2234,9 @@ async function callNetlifyOCR(imageDataURL) {
   const originalText = loaderSub.textContent;
   
   try {
-    // Validate image data
-    if (!imageDataURL.startsWith('data:image/')) {
-      throw new Error('Invalid image format');
+    // Validate image data: require a full data URL string with header and base64 payload
+    if (typeof imageDataURL !== 'string' || !imageDataURL.startsWith('data:image/')) {
+      throw new Error('Invalid image format: expected data URL string');
     }
 
     // Check if running on localhost or deployed
@@ -1357,7 +2251,7 @@ async function callNetlifyOCR(imageDataURL) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), OCR_TIMEOUT);
 
-    // Send request to Netlify Function
+    // Send request to Netlify Function with the full data URL string
     const response = await fetch(OCR_ENDPOINT, {
       method: 'POST',
       headers: {
@@ -1396,13 +2290,11 @@ async function callNetlifyOCR(imageDataURL) {
     }
 
     console.log('[ocr] OCR service response:', data);
-    // Check API response status
-    if (!data.success) {
+    // Prefer `data.text` returned by the function (backend may or may not include `success`)
+    const extractedText = (data && typeof data.text === 'string') ? data.text : (data?.result || '');
+    if (data && data.success === false) {
       throw new Error(data.error || 'OCR service returned an error');
     }
-
-    // Validate text extraction result
-    const extractedText = data.text || '';
     
     if (!extractedText.trim()) {
       console.warn('Warning: No text detected in image');
@@ -1427,13 +2319,13 @@ async function callNetlifyOCR(imageDataURL) {
   }
 }
 
-function renderEditor(text) {
+function renderEditor(text, successMessage = 'Text extracted successfully!') {
   document.getElementById('ocrLoader').style.display = 'none';
   document.getElementById('editorLayout').style.display = 'grid';
   document.getElementById('editorImg').src = appState.imageDataURLs[0] || '';
   document.getElementById('examEditor').value = text || '';
   updateHeaderDisplay();
-  showToast('Text extracted successfully!', 'success');
+  showToast(successMessage, 'success');
 }
 
 /* ================================================================
@@ -1634,6 +2526,248 @@ function copyText() {
   });
 }
 
+function toggleShareMenu(event) {
+  event.stopPropagation();
+
+  const text = document.getElementById('examEditor').value.trim();
+  if (!text) return showToast('Please generate or add content before sharing.', 'error');
+
+  updateShareLinks();
+  const menu = document.getElementById('shareMenu');
+  const button = document.getElementById('shareButton');
+  const shouldShow = !menu.classList.contains('show');
+  menu.classList.toggle('show', shouldShow);
+  button.setAttribute('aria-expanded', String(shouldShow));
+}
+
+function closeShareMenu() {
+  const menu = document.getElementById('shareMenu');
+  const button = document.getElementById('shareButton');
+  if (!menu || !button) return;
+  menu.classList.remove('show');
+  button.setAttribute('aria-expanded', 'false');
+}
+
+function updateShareLinks() {
+  document.getElementById('whatsappShareLink').href = getWhatsAppShareUrl();
+  document.getElementById('emailShareLink').href = getEmailShareUrl();
+}
+
+function openShareTarget(event, target) {
+  event.preventDefault();
+  event.stopPropagation();
+  closeShareMenu();
+  sharePaperImage(target);
+  return false;
+}
+
+async function sharePaperImage(target) {
+  const text = document.getElementById('examEditor').value.trim();
+  if (!text) return showToast('Please generate or add content before sharing.', 'error');
+
+  try {
+    const blob = await createPaperImageBlob();
+    const filename = buildPaperFilename('png');
+
+    if (target === 'whatsapp') {
+      shareToWhatsApp(blob, filename);
+      return;
+    }
+
+    if (target === 'email') {
+      await shareToEmail(blob, filename);
+    }
+  } catch (err) {
+    if (err?.name === 'AbortError') {
+      return showToast('Sharing cancelled.', 'info');
+    }
+    console.error('[share] Unable to share paper image:', err);
+    showToast('Unable to prepare the paper image for sharing.', 'error');
+  }
+}
+
+function shareToWhatsApp(blob, filename) {
+  downloadBlob(blob, filename);
+  window.open(getWhatsAppShareUrl(), '_blank', 'noopener');
+  showToast('Image downloaded. Attach it after WhatsApp opens.', 'info');
+}
+
+async function shareToEmail(blob, filename) {
+  const copied = await copyImageToClipboard(blob);
+
+  if (!copied) {
+    downloadBlob(blob, filename);
+  }
+
+  window.location.href = getEmailShareUrl();
+  showToast(copied ? 'Image copied. Paste it after email opens.' : 'Image downloaded. Attach it after email opens.', 'info');
+}
+
+function getWhatsAppShareUrl() {
+  return `https://web.whatsapp.com/send?text=${encodeURIComponent(getShareMessage())}`;
+}
+
+function getEmailShareUrl() {
+  const subject = encodeURIComponent('Examination Paper');
+  const body = encodeURIComponent(`${getShareMessage()}\n\nThe paper image has been prepared. Attach or paste the downloaded image in this email.`);
+  return `mailto:?subject=${subject}&body=${body}`;
+}
+
+function getShareMessage() {
+  const d = appState.details;
+  return [
+    'Great Turning Point International School',
+    `${d.subject || 'Examination'} - ${d.cls || ''}`,
+    `${d.term || ''} ${d.session || ''}`.trim()
+  ].filter(Boolean).join('\n');
+}
+
+function buildPaperFilename(ext) {
+  const d = appState.details;
+  const parts = [d.subject, d.cls, d.term, d.session]
+    .filter(Boolean)
+    .map(part => String(part).replace(/[^\w-]+/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, ''));
+  return `${parts.join('_') || 'examination-paper'}.${ext}`;
+}
+
+function downloadBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 500);
+}
+
+async function copyImageToClipboard(blob) {
+  if (!navigator.clipboard || typeof ClipboardItem === 'undefined') return false;
+
+  try {
+    await navigator.clipboard.write([
+      new ClipboardItem({ [blob.type]: blob })
+    ]);
+    return true;
+  } catch (err) {
+    console.warn('[share] Image clipboard copy failed:', err);
+    return false;
+  }
+}
+
+function createPaperImageBlob() {
+  const canvas = renderPaperToCanvas();
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(blob => {
+      if (blob) resolve(blob);
+      else reject(new Error('Unable to render paper image'));
+    }, 'image/png', 0.95);
+  });
+}
+
+function renderPaperToCanvas() {
+  const d = appState.details;
+  const bodyText = document.getElementById('examEditor').value.trim();
+  const width = 1240;
+  const margin = 110;
+  const maxTextWidth = width - margin * 2;
+  const bodyLineHeight = 34;
+  const paragraphGap = 18;
+  const tempCanvas = document.createElement('canvas');
+  const tempCtx = tempCanvas.getContext('2d');
+
+  tempCtx.font = '24px "Times New Roman", serif';
+  const bodyLines = wrapCanvasText(tempCtx, bodyText, maxTextWidth);
+  const bodyHeight = bodyLines.reduce((height, line) => {
+    return height + (line === '' ? paragraphGap : bodyLineHeight);
+  }, 0);
+
+  const height = Math.max(1754, 330 + bodyHeight + 120);
+  const canvas = document.createElement('canvas');
+  canvas.width = width;
+  canvas.height = height;
+  const ctx = canvas.getContext('2d');
+
+  ctx.fillStyle = '#FFFFFF';
+  ctx.fillRect(0, 0, width, height);
+  ctx.fillStyle = '#1B2A5E';
+  ctx.fillRect(0, 0, width, 12);
+
+  ctx.fillStyle = '#111111';
+  ctx.textBaseline = 'top';
+  ctx.textAlign = 'center';
+  ctx.font = '700 30px "Times New Roman", serif';
+  ctx.fillText('GREAT TURNING POINT INTERNATIONAL SCHOOL', width / 2, 70);
+
+  ctx.font = '22px "Times New Roman", serif';
+  ctx.fillText('UMUODE, OSISIOMA NGWA L.G.A, ABIA STATE', width / 2, 112);
+
+  ctx.font = '700 24px "Times New Roman", serif';
+  ctx.fillText(`${d.term || ''} EXAMINATION, ${d.session || ''} ACADEMIC SESSION`, width / 2, 158);
+
+  ctx.strokeStyle = '#111111';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(margin, 210);
+  ctx.lineTo(width - margin, 210);
+  ctx.stroke();
+
+  ctx.font = '700 22px "Times New Roman", serif';
+  ctx.textAlign = 'left';
+  ctx.fillText(`SUBJECT: ${d.subject || ''}`, margin, 235);
+  ctx.textAlign = 'center';
+  ctx.fillText(`CLASS: ${d.cls || ''}`, width / 2, 235);
+  ctx.textAlign = 'right';
+  ctx.fillText(`DURATION: ${d.duration || ''}`, width - margin, 235);
+
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(margin, 285);
+  ctx.lineTo(width - margin, 285);
+  ctx.stroke();
+
+  ctx.font = '24px "Times New Roman", serif';
+  ctx.textAlign = 'left';
+  let y = 325;
+  bodyLines.forEach(line => {
+    if (line === '') {
+      y += paragraphGap;
+      return;
+    }
+    ctx.fillText(line, margin, y);
+    y += bodyLineHeight;
+  });
+
+  return canvas;
+}
+
+function wrapCanvasText(ctx, text, maxWidth) {
+  const lines = [];
+  const paragraphs = text.replace(/\r\n/g, '\n').split('\n');
+
+  paragraphs.forEach(paragraph => {
+    const words = paragraph.trim().split(/\s+/).filter(Boolean);
+    if (!words.length) {
+      lines.push('');
+      return;
+    }
+
+    let line = '';
+    words.forEach(word => {
+      const candidate = line ? `${line} ${word}` : word;
+      if (ctx.measureText(candidate).width <= maxWidth) {
+        line = candidate;
+      } else {
+        if (line) lines.push(line);
+        line = word;
+      }
+    });
+    if (line) lines.push(line);
+  });
+
+  return lines;
+}
+
 function copyExtractedText() {
   const text = document.getElementById('examEditor').value;
   if (!text.trim()) {
@@ -1652,12 +2786,15 @@ function copyExtractedText() {
    ================================================================ */
 function startNew() {
   if (!confirm('Start a new examination? Current work will be lost.')) return;
+  closeCamera();
   appState = { currentStep: 1, imageFiles: [], imageDataURLs: [], extractedText: '', details: {} };
   document.getElementById('examEditor').value = '';
+  document.getElementById('directTextInput').value = '';
+  document.getElementById('textEntryPanel').classList.remove('show');
   document.getElementById('previewGrid').innerHTML = '';
   document.getElementById('previewStrip').style.display = 'none';
   document.getElementById('extractBtn').style.display = 'none';
-  document.getElementById('fileInput').value = '';
+  clearSourceInputs();
   goToStep(1);
 }
 
@@ -1684,6 +2821,8 @@ function showToast(msg, type = 'info') {
     if (opt.value === session) { opt.selected = true; return; }
   }
 })();
+
+document.addEventListener('click', closeShareMenu);
 </script>
 </body>
 </html>
