@@ -9,7 +9,7 @@ User Browser (Frontend)
         ↓
 Netlify Functions (Backend)
         ↓
-  Google Vision API
+  Gemini Vision Model
         ↓
   Extracted Text
         ↓
@@ -19,61 +19,23 @@ Netlify Functions (Backend)
 ## Prerequisites
 
 - Git account
-- Google Cloud Platform (GCP) account
+- Google AI Studio account with Gemini API access
 - Netlify account (free tier supported)
 - Node.js 18+ (for local development)
 
 ---
 
-## Step 1: Set Up Google Cloud Vision API
+## Step 1: Set Up Gemini API Access
 
-### 1.1 Create a GCP Project
+### 1.1 Create an API Key
 
-1. Go to [Google Cloud Console](https://console.cloud.google.com)
-2. Create a new project: **New Project** → Name: `DocuScan` → **Create**
-3. Wait for project to be created, then select it
+1. Open Google AI Studio
+2. Create a new API key
+3. Copy the key and store it securely
 
-### 1.2 Enable Vision API
+### 1.2 Choose a Vision Model
 
-1. In the console, search for **Vision API**
-2. Click **Vision API** from results
-3. Click **Enable**
-4. Wait for activation to complete
-
-### 1.3 Create Service Account
-
-1. Go to **APIs & Services** → **Credentials**
-2. Click **Create Credentials** → **Service Account**
-3. Fill in details:
-   - **Service Account Name:** `docuscan-ocr`
-   - **Service Account ID:** (auto-filled)
-   - Click **Create and Continue**
-4. Grant roles:
-   - Click **Select a role** → Search `Vision` → Select **Cloud Vision API User**
-   - Click **Continue**
-5. Click **Create Key**
-   - Select **JSON** format
-   - Click **Create**
-   - **A JSON file will download** - Save it securely
-
-### 1.4 Extract Credentials
-
-Open the downloaded JSON file and extract:
-- `project_id`
-- `client_email`
-- `private_key` (entire multi-line string with `\n`)
-
-**Example:**
-```json
-{
-  "type": "service_account",
-  "project_id": "docuscan-12345",
-  "private_key_id": "...",
-  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQ...\n-----END PRIVATE KEY-----\n",
-  "client_email": "docuscan-ocr@docuscan-12345.iam.gserviceaccount.com",
-  ...
-}
-```
+The Netlify function defaults to `gemini-3.8-flash`. You can override this with `GEMINI_VISION_MODEL` if you want to use a different vision-capable Gemini model.
 
 ---
 
@@ -105,15 +67,12 @@ Open the downloaded JSON file and extract:
 
 ### 2.3 Add Environment Variables
 
-In Netlify, add these environment variables (from Step 1.4):
+In Netlify, add these environment variables:
 
 | Key | Value |
 |-----|-------|
-| `GOOGLE_VISION_PROJECT_ID` | Your GCP project ID |
-| `GOOGLE_VISION_CLIENT_EMAIL` | Service account email |
-| `GOOGLE_VISION_PRIVATE_KEY` | Full private key JSON string |
-
-**Important:** For the private key, copy the entire value including `\n` newline characters.
+| `GEMINI_API_KEY` | Your Gemini API key |
+| `GEMINI_VISION_MODEL` | `gemini-3.8-flash` or another vision-capable Gemini model |
 
 ### 2.4 Deploy
 
@@ -141,12 +100,8 @@ In Netlify, add these environment variables (from Step 1.4):
 
 **"Authentication failed" error:**
 - Verify environment variables are set correctly
-- Check private key includes `\n` characters
-- Verify Vision API is enabled in GCP
-
-**"Permission denied" error:**
-- Ensure service account has "Cloud Vision API User" role
-- Go to GCP → Service Accounts → Roles → Verify permissions
+- Verify `GEMINI_API_KEY` is valid and available to the deployed context
+- Check your Google AI Studio or Google Cloud project access
 
 **Large image timeouts:**
 - Maximum image size is 20MB
@@ -178,9 +133,8 @@ This runs:
 Create a `.env` file (never commit to Git):
 
 ```
-GOOGLE_VISION_PROJECT_ID=your-project-id
-GOOGLE_VISION_CLIENT_EMAIL=your-email@project-id.iam.gserviceaccount.com
-GOOGLE_VISION_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
+GEMINI_API_KEY=your-gemini-api-key
+GEMINI_VISION_MODEL=gemini-3.8-flash
 ```
 
 Add to `.gitignore`:
@@ -252,8 +206,7 @@ docuscan/
 
 ## Production Checklist
 
-- [ ] Google Cloud Vision API enabled
-- [ ] Service account created with proper permissions
+- [ ] Gemini API key created
 - [ ] Environment variables added to Netlify
 - [ ] Code pushed to GitHub/GitLab
 - [ ] Netlify connected to Git repository
@@ -269,9 +222,9 @@ docuscan/
 
 ## Costs & Limits
 
-### Google Vision API Pricing
-- Free: 1,000 requests/month
-- Paid: $1.50 per 1,000 requests after free tier
+### Gemini API Pricing
+- Usage is billed by model and token/image processing volume
+- Check your Google AI Studio or Google Cloud dashboard for current pricing and limits
 
 ### Netlify
 - Free tier: Unlimited builds, 125k compute minutes/month
@@ -297,7 +250,7 @@ docuscan/
 - Enable CORS restrictions if needed
 - Add rate limiting (Netlify Analytics)
 - Monitor function usage in Netlify dashboard
-- Regularly rotate service account keys
+- Regularly rotate API keys
 - Use a custom domain with SSL (automatic with Netlify)
 
 ---
@@ -310,12 +263,9 @@ View function logs:
 1. Netlify dashboard → **Functions** → **ocr**
 2. See real-time execution logs
 
-### Contact GCP Support
+### Contact Google AI Support
 
-If Vision API issues persist:
-1. Go to Google Cloud Console
-2. **Support** → **Create ticket**
-3. Provide error messages and function logs
+If Gemini API issues persist, check your Google AI Studio or Google Cloud dashboard for usage, billing, and project access details.
 
 ---
 
@@ -323,7 +273,7 @@ If Vision API issues persist:
 
 - **DocuScan Version:** 2.0.0
 - **Node.js:** 18.x
-- **Google Cloud Vision:** 4.5.0
+- **Gemini Vision Model:** `gemini-3.8-flash` by default
 - **PDF Library:** jsPDF 2.5.1
 - **Deployment Platform:** Netlify
 

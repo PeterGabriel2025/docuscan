@@ -2,18 +2,18 @@
 
 **Snap. Convert. Edit. Print.**
 
-A production-ready document OCR and examination paper management system built with Netlify Functions and Google Vision API.
+A phone-friendly examination paper tool for preparing, editing, and exporting questions transcribed with Gemini.
 
 ## Features
 
-✨ **Image Upload & OCR**
-- Drag & drop image upload
-- Mobile camera capture support
-- Google Vision API for accurate text extraction
-- Real-time extraction status
+✨ **AI-Assisted Image Transcription**
+- Open Gemini and attach up to 10 exam-page images per batch
+- Take photos or select images directly inside Gemini on your phone
+- Copy a transcription prompt, then paste the AI response back into DocuScan
+- Review and edit the transcription before exporting
 
 📝 **Powerful Editor**
-- Side-by-side original image + editable text
+- Editable text with exam details
 - AI-powered cleanup tools:
   - Fix question numbering
   - Remove extra spaces
@@ -39,16 +39,7 @@ cd docuscan
 npm install
 ```
 
-### 2. Set Environment Variables
-
-Copy `.env.example` to `.env`:
-```bash
-cp .env.example .env
-```
-
-Edit `.env` with your Google Cloud credentials (see DEPLOYMENT.md).
-
-### 3. Local Development
+### 2. Local Development
 
 ```bash
 netlify dev
@@ -56,7 +47,7 @@ netlify dev
 
 Visit `http://localhost:8888`
 
-### 4. Deploy to Netlify
+### 3. Deploy to Netlify
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for complete step-by-step guide.
 
@@ -69,19 +60,12 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for complete step-by-step guide.
 - **No dependencies** (production-ready single file)
 - **Responsive design** - Mobile, tablet, desktop
 
-### Backend
-- **Netlify Functions** - Serverless Node.js
-- **Google Vision API** - OCR engine
-- **Secure** - API keys in environment variables
+### Manual AI Transcription Flow
+1. DocuScan opens Gemini in a separate tab and provides a transcription prompt
+2. Teacher takes photos or selects up to 10 page images directly inside Gemini
+3. Teacher sends the images with the prompt, then copies Gemini's transcription back into DocuScan to edit and export
 
-### Data Flow
-1. User uploads image
-2. Frontend compresses and converts to base64
-3. Sends to `/.netlify/functions/ocr`
-4. Function authenticates with Google Vision
-5. Vision API extracts text
-6. Text returned to frontend
-7. User can edit and export
+The teacher handles images and transcription in Gemini; DocuScan does not access the phone camera, upload images, or send them to Gemini automatically. A separate Netlify OCR endpoint remains in the project but is not part of this teacher workflow.
 
 ---
 
@@ -108,11 +92,10 @@ docuscan/
 
 | Variable | Required | Description |
 |----------|----------|-------------|
-| `GOOGLE_VISION_PROJECT_ID` | Yes | GCP Project ID |
-| `GOOGLE_VISION_CLIENT_EMAIL` | Yes | Service account email |
-| `GOOGLE_VISION_PRIVATE_KEY` | Yes | Service account private key |
+| `GEMINI_API_KEY` | No for the website workflow | Used only if the separate Netlify OCR endpoint is called directly |
+| `GEMINI_VISION_MODEL` | No | Model for the separate OCR endpoint; defaults to `gemini-3.8-flash` |
 
-See DEPLOYMENT.md for setup instructions.
+The Gemini-tab workflow in the website does not require an API key.
 
 ### Netlify
 
@@ -122,10 +105,9 @@ Configuration file: `netlify.toml`
 [build]
   functions = "functions"
   publish = "."
-
-[env.production]
-  GOOGLE_VISION_API_KEY = ""
 ```
+
+Only configure `GEMINI_API_KEY` in Netlify if you separately use the OCR endpoint; do not put the key in `netlify.toml`.
 
 ---
 
@@ -170,15 +152,16 @@ Configuration file: `netlify.toml`
 - Select class (JSS/SS)
 - Set exam duration
 
-### Step 2: Upload Image
-- Drag & drop or click to browse
-- Supports JPG, PNG, WEBP
-- Mobile: tap to use camera
-- Max file size: 20MB
+### Step 2: Prepare Pages for Gemini
+- Tap **Open Gemini** and keep DocuScan open in another tab
+- In Gemini, use the attachment button to take photos or choose images from the phone gallery
+- Attach up to 10 pages in one message; process additional pages in batches
+- Copy the provided transcription prompt into Gemini and send it with the images
 
 ### Step 3: Extract & Edit
-- System extracts text automatically
-- Review and correct errors
+- Copy Gemini's response
+- Paste Gemini's response into DocuScan and select **Continue to Exam Editor**
+- Review and correct the questions
 - Use toolbar for quick fixes
 - Add/remove questions as needed
 
@@ -192,27 +175,16 @@ Configuration file: `netlify.toml`
 
 ## Troubleshooting
 
-### OCR Not Working
+### Gemini transcription workflow
 
-**Error: "Function not found"**
-- Ensure `netlify.toml` is in root
-- Ensure `functions/ocr.js` exists
-- Redeploy on Netlify
+**Gemini did not open**
+- Allow pop-ups for DocuScan and select **Open Gemini** again.
 
-**Error: "Authentication failed"**
-- Check environment variables are set
-- Verify Vision API is enabled in GCP
-- Check service account has correct permissions
+**Page photos are not attached in Gemini**
+- In Gemini, use its attachment button to take photos or choose them from your phone's gallery.
 
-**Error: "No text detected"**
-- Image quality may be too low
-- Try image with better contrast
-- Ensure text is readable
-
-**Error: "Request timeout"**
-- Image may be too large
-- Try compressing to < 5MB
-- Check internet connection
+**There are more than 10 pages**
+- Transcribe pages in batches of up to 10 and combine the returned text before pasting it into DocuScan.
 
 ### Local Development Issues
 
@@ -258,16 +230,15 @@ netlify dev --port 3000
 - Enable CORS if needed
 - Add rate limiting
 - Monitor API usage
-- Rotate service account keys regularly
+- Rotate API keys regularly
 
 ---
 
 ## Costs
 
-### Google Vision API
-- **Free tier:** 1,000 requests/month
-- **Paid:** $1.50 per 1,000 requests
-- (Actual costs depend on usage)
+### Gemini API
+- Usage is billed by model and token/image processing volume
+- See your Google AI Studio or Google Cloud dashboard for current pricing and limits
 
 ### Netlify
 - **Free:** 125,000 function invocations/month
@@ -305,7 +276,7 @@ MIT License - Use freely for personal and commercial projects.
 
 ### v2.0.0 (Current)
 - Migrated from client-side OCR to backend architecture
-- Google Vision API integration
+- Gemini vision model integration
 - Netlify Functions backend
 - Secure environment variable handling
 - Enhanced error handling
@@ -331,6 +302,8 @@ Future enhancements:
 ---
 
 **Made with ❤️ for educators**
+
+Copyright (c) 2026 DocuScan. All rights reserved.
 
 For deployment instructions, see [DEPLOYMENT.md](DEPLOYMENT.md)
 

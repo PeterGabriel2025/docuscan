@@ -1,6 +1,6 @@
 /**
  * Netlify Function: OCR handler for DocuScan
- * Uses OpenAI vision models via OpenAI's Chat Completions endpoint.
+ * Uses Gemini vision models via Google's Gemini API.
  *
  * Request JSON: { imageData: 'data:image/...;base64,...' }
  * Response JSON: { success: boolean, text?: string, error?: string }
@@ -22,13 +22,12 @@ function buildResponse(statusCode, body) {
 
 function parseDataURL(dataURL) {
   if (typeof dataURL !== 'string') throw new Error('imageData must be a string');
-  const parts = dataURL.split(',');
-  // ensure header is parts[0] and base64 is parts[1]
-  if (!parts[0] || !parts[1]) throw new Error('Invalid data URL format');
-  const header = parts[0];
-  const base64 = parts[1];
-  if (!header.startsWith('data:image/')) throw new Error('Expected data URL of image type');
+  const match = dataURL.match(/^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/]*={0,2})$/i);
+  if (!match || !match[2]) throw new Error('Expected a base64 JPEG, PNG, or WEBP image');
+  const header = `data:${match[1]};base64`;
+  const base64 = match[2];
   const buffer = Buffer.from(base64, 'base64');
+  if (!buffer.length) throw new Error('The uploaded image is empty');
   return { header, base64, buffer };
 }
 
@@ -36,6 +35,29 @@ function ensureImageSize(buffer, maxBytes = 4 * 1024 * 1024) {
   if (buffer.length > maxBytes) {
     throw new Error(`Image size ${Math.round(buffer.length / 1024 / 1024)}MB exceeds ${Math.round(maxBytes / 1024 / 1024)}MB limit`);
   }
+}
+
+function extractInteractionText(data) {
+  const directText = [data?.output_text, data?.outputText]
+    .filter(value => typeof value === 'string' && value.trim());
+  if (directText.length) return directText.join('\n').trim();
+
+  const textBlocks = [
+    ...(Array.isArray(data?.outputs) ? data.outputs : []),
+    ...(Array.isArray(data?.output) ? data.output : [])
+  ];
+  const outputText = textBlocks
+    .filter(block => block?.type === 'text')
+    .map(block => typeof block.text === 'string' ? block.text : block.text?.text || '')
+    .filter(Boolean);
+  if (outputText.length) return outputText.join('\n').trim();
+
+  const stepText = (Array.isArray(data?.steps) ? data.steps : [])
+    .flatMap(step => step?.content || step?.modelOutput?.content || step?.model_output?.content || [])
+    .map(content => typeof content?.text === 'string' ? content.text : content?.text?.text || '')
+    .filter(Boolean);
+
+  return stepText.join('\n').trim();
 }
 
 exports.handler = async (event) => {
@@ -70,91 +92,79 @@ exports.handler = async (event) => {
     return buildResponse(400, { success: false, error: 'imageData is required' });
   }
 
+  let image;
   try {
     console.log('[ocr] Validating data URL');
-    const { header, base64, buffer } = parseDataURL(imageData);
+    image = parseDataURL(imageData);
+    ensureImageSize(image.buffer);
+  } catch (err) {
+    const status = err?.message?.includes('exceeds') ? 413 : 400;
+    return buildResponse(status, { success: false, error: err?.message || 'Invalid image data' });
+  }
+
+  try {
+    const { header, base64, buffer } = image;
     console.log('[ocr] Image header:', header);
     console.log('[ocr] Raw bytes:', buffer.length);
-    ensureImageSize(buffer);
 
-    const apiKey = process.env.OPENAI_API_KEY;
-    console.log('[ocr] OPENAI_API_KEY present:', !!apiKey);
+    const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY;
+    console.log('[ocr] GEMINI_API_KEY/GOOGLE_API_KEY present:', !!apiKey);
     if (!apiKey) {
-      console.error('[ocr] No OPENAI_API_KEY found in environment');
+      console.error('[ocr] No GEMINI_API_KEY or GOOGLE_API_KEY found in environment');
       return buildResponse(500, { success: false, error: 'Server misconfigured: missing credentials' });
     }
 
-    // Build request per OpenAI's multimodal chat schema.
-    const model = process.env.OPENAI_VISION_MODEL || 'gpt-4o-mini';
-    const prompt = 'Extract all handwritten text from this book page image. Ignore printed text elements. Preserve numbering, line breaks, paragraphs, and punctuation exactly as written. Return only the clean extracted text ready to copy.';
+    const model = process.env.GEMINI_VISION_MODEL || 'gemini-3.8-flash';
+    const prompt = 'Transcribe all readable text in this exam page, including handwritten and printed questions. Preserve the original wording, numbering, section headings, answer choices, symbols, and line breaks as closely as possible. Do not solve, summarize, or invent content. Mark any unreadable word as [unclear]. Return only the transcription.';
+    const mimeType = (header.match(/^data:([^;]+);base64$/) || [])[1] || 'image/jpeg';
 
     const requestBody = {
       model,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            { type: 'text', text: prompt },
-            { type: 'image_url', image_url: { url: imageData } }
-          ]
-        }
-      ],
-      temperature: 0.1
+      input: [
+        { type: 'text', text: prompt },
+        { type: 'image', data: base64, mime_type: mimeType }
+      ]
     };
 
-    const OPENAI_ENDPOINT = 'https://api.openai.com/v1/chat/completions';
-    console.log('[ocr] Sending request to OpenAI endpoint', OPENAI_ENDPOINT);
+    const GEMINI_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/interactions';
+    console.log('[ocr] Sending request to Gemini endpoint', GEMINI_ENDPOINT);
 
-    const response = await fetch(OPENAI_ENDPOINT, {
+    const response = await fetch(GEMINI_ENDPOINT, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'x-goog-api-key': apiKey
       },
       body: JSON.stringify(requestBody)
     });
-
     const responseText = await response.text();
-    console.log('[ocr] OpenAI status:', response.status);
-    console.log('[ocr] OpenAI response (truncated):', responseText.substring(0, 4000));
+    console.log('[ocr] Gemini status:', response.status);
 
     if (!response.ok) {
       let parsed = {};
       try { parsed = JSON.parse(responseText); } catch (e) {}
-      const message = parsed?.error?.message || parsed?.error || `OpenAI HTTP ${response.status}`;
-      console.error('[ocr] OpenAI error:', message);
+      const message = parsed?.error?.message || parsed?.error || `Gemini HTTP ${response.status}`;
+      console.error('[ocr] Gemini error:', message);
       return buildResponse(response.status, { success: false, error: message });
     }
 
     let data;
     try { data = JSON.parse(responseText); } catch (err) {
-      console.error('[ocr] Invalid JSON from OpenAI');
-      throw new Error('Invalid response from OpenAI');
+      console.error('[ocr] Invalid JSON from Gemini');
+      throw new Error('Invalid response from Gemini');
     }
 
-    // Safe extraction of generated content
-    let extracted = '';
-    try {
-      const messageContent = data?.choices?.[0]?.message?.content;
-      if (!messageContent) {
-        // Some APIs return choices[0].message as string or choices[0].text
-        extracted = data?.choices?.[0]?.text || '';
-      } else if (typeof messageContent === 'string') {
-        extracted = messageContent;
-      } else if (Array.isArray(messageContent)) {
-        // find first text block
-        const textBlock = messageContent.find(c => c?.type === 'text' && typeof c?.text === 'string');
-        if (textBlock) extracted = textBlock.text;
-        else extracted = messageContent.map(c => c?.text || '').filter(Boolean).join('\n');
-      } else if (messageContent?.type === 'text' && typeof messageContent?.text === 'string') {
-        extracted = messageContent.text;   
-      }
-    } catch (e) {
-      console.warn('[ocr] Failed to parse generated content', e);
-    }
-
-    extracted = (extracted || '').trim();
+    const extracted = extractInteractionText(data);
     console.log('[ocr] Extracted length:', extracted.length);
+
+    if (!extracted) {
+      console.error('[ocr] Gemini returned no transcription', {
+        status: data?.status || 'unknown',
+        responseKeys: Object.keys(data || {}),
+        outputTypes: (data?.outputs || []).map(output => output?.type).filter(Boolean)
+      });
+      return buildResponse(502, { success: false, error: 'No text was recognized. Try a clearer, well-lit photo with the page filling the frame.' });
+    }
 
     return buildResponse(200, { success: true, text: extracted });
 
@@ -162,7 +172,6 @@ exports.handler = async (event) => {
     const errorDetail = err && err.stack ? err.stack : Object.assign({ message: err?.message }, err);
     console.error('[ocr] Processing error:', errorDetail);
     const msg = err?.message || 'OCR processing failed';
-    const status = (msg && msg.includes('exceeds')) ? 413 : 500;
-    return buildResponse(status, { success: false, error: msg });
+    return buildResponse(500, { success: false, error: msg });
   }
 };

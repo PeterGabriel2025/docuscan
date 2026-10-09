@@ -13,9 +13,3 @@
   from = "/api/*"
   to = "/.netlify/functions/:splat"
   status = 200
-
-[env.production]
-  OPENAI_API_KEY = ""
-
-[env.staging]
-  OPENAI_API_KEY = ""

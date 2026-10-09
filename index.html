@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>DocuScan – Snap. Convert. Edit. Print.</title>
+<title>DocuScan – Gemini Transcription, Edit & Print</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -177,6 +177,18 @@ body {
   padding: 40px 24px 80px;
 }
 
+.app-footer {
+  padding: 24px;
+  text-align: center;
+  color: var(--slate);
+  font-size: 0.78rem;
+}
+
+.app-footer strong {
+  color: var(--navy);
+  font-weight: 700;
+}
+
 /* ============================================================
    CARD
    ============================================================ */
@@ -324,226 +336,68 @@ textarea:focus {
   line-height: 1.45;
 }
 
-.hidden-input {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  opacity: 0;
-  pointer-events: none;
+.manual-ai-panel {
+  margin-top: 18px;
+  padding: 20px;
+  border: 1.5px solid var(--mist);
+  border-radius: var(--radius-md);
+  background: #F8FAFC;
 }
 
-.upload-zone {
-  border: 2.5px dashed var(--mist);
-  border-radius: var(--radius-lg);
-  padding: 34px 28px;
-  text-align: center;
-  cursor: pointer;
-  transition: all var(--transition);
-  position: relative;
-  background: var(--cream);
-}
-
-.upload-zone:hover, .upload-zone.drag-over {
-  border-color: var(--gold);
-  background: rgba(201,146,26,0.04);
-}
-
-.upload-icon {
-  font-size: 2.4rem;
-  margin-bottom: 12px;
-  display: block;
-}
-
-.upload-primary {
-  font-size: 1.1rem;
-  font-weight: 600;
+.manual-ai-panel h3 {
   color: var(--navy);
+  font-size: 1rem;
   margin-bottom: 8px;
 }
 
-.upload-secondary {
-  font-size: 0.84rem;
+.manual-ai-panel p,
+.manual-ai-panel li {
   color: var(--slate);
+  font-size: 0.84rem;
 }
 
-.upload-formats {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 20px;
-  flex-wrap: wrap;
+.manual-ai-panel ol {
+  margin: 8px 0 16px 20px;
 }
 
-.format-chip {
-  background: var(--navy);
-  color: rgba(255,255,255,0.85);
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 4px 10px;
-  border-radius: 4px;
-  letter-spacing: 1px;
-  font-family: var(--font-mono);
-}
-
-.text-entry-panel {
-  display: none;
-  margin-top: 18px;
-  padding: 18px;
-  border: 1.5px solid var(--mist);
-  border-radius: var(--radius-md);
-  background: #fff;
-}
-
-.text-entry-panel.show {
-  display: block;
-}
-
-.text-entry-panel textarea {
-  width: 100%;
-  min-height: 190px;
-  resize: vertical;
-  background: var(--cream);
-  line-height: 1.6;
-}
-
-.text-entry-actions {
+.manual-ai-actions {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
   margin-top: 12px;
 }
 
-.camera-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 26, 61, 0.82);
-  z-index: 10000;
-  padding: 24px;
-  align-items: center;
-  justify-content: center;
-}
-
-.camera-overlay.show {
-  display: flex;
-}
-
-.camera-panel {
-  width: min(760px, 100%);
-  background: white;
-  border-radius: var(--radius-md);
-  overflow: hidden;
-  box-shadow: var(--shadow-lg);
-}
-
-.camera-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 14px 18px;
-  background: var(--navy);
-  color: white;
-}
-
-.camera-title {
-  font-weight: 700;
-  font-size: 0.92rem;
-}
-
-.camera-close {
-  width: 34px;
-  height: 34px;
-  border: none;
-  border-radius: 50%;
-  background: rgba(255,255,255,0.12);
-  color: white;
-  cursor: pointer;
-  font-size: 1.1rem;
-}
-
-.camera-body {
-  background: #0f172a;
-  aspect-ratio: 4 / 3;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.camera-body video {
+.manual-ai-panel textarea {
   width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background: #0f172a;
+  min-height: 110px;
+  margin-top: 8px;
+  resize: vertical;
+  background: #fff;
 }
 
-.camera-actions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-  padding: 16px;
-  flex-wrap: wrap;
+.manual-ai-actions .btn {
+  min-height: 48px;
 }
 
-/* ============================================================
-   IMAGE PREVIEW
-   ============================================================ */
-.preview-strip {
-  display: none;
-  margin-top: 24px;
-  position: relative;
-  border-radius: var(--radius-md);
-  padding: 18px;
-  background: #ffffff;
-  box-shadow: var(--shadow-sm);
+.manual-ai-panel ol {
+  padding-left: 4px;
 }
 
-.preview-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 12px;
-}
+@media (max-width: 600px) {
+  .manual-ai-panel {
+    padding: 16px;
+  }
 
-.preview-grid .preview-thumb {
-  position: relative;
-  overflow: hidden;
-  border-radius: 12px;
-  border: 1px solid #e2e8f0;
-  background: #f8fafc;
-}
+  .manual-ai-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
 
-.preview-grid .preview-thumb img {
-  width: 100%;
-  height: 100px;
-  object-fit: cover;
-  display: block;
-}
+  .manual-ai-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
 
-.preview-grid .preview-thumb span {
-  display: block;
-  padding: 8px 10px;
-  font-size: 0.78rem;
-  color: var(--slate);
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.preview-strip .remove-img {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background: rgba(0,0,0,0.65);
-  color: white;
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 /* ============================================================
@@ -644,7 +498,7 @@ textarea:focus {
    ============================================================ */
 .editor-layout {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 24px;
   align-items: start;
 }
@@ -731,33 +585,40 @@ textarea:focus {
    ============================================================ */
 .exam-header-block {
   text-align: center;
-  border-bottom: 2px solid var(--navy);
-  padding-bottom: 16px;
-  margin-bottom: 20px;
+  padding: 12px 20px 14px;
+  margin-bottom: 12px;
   pointer-events: none;
   user-select: none;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 .school-name-display {
-  font-family: var(--font-display);
-  font-size: 1rem;
-  font-weight: 900;
-  color: var(--navy);
-  letter-spacing: 0.5px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #111;
   line-height: 1.3;
 }
 
 .school-address-display {
   font-size: 0.78rem;
-  color: var(--slate);
-  margin: 2px 0 8px;
+  color: #111;
+  margin: 3px 0;
 }
 
 .exam-meta-display {
   font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--navy);
+  font-weight: 400;
+  color: #111;
   margin: 3px 0;
+}
+
+.exam-header-fields {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 6px 0 2px;
+  text-align: left;
+  font-size: 0.8rem;
 }
 
 /* ============================================================
@@ -779,12 +640,7 @@ textarea:focus {
 }
 
 .preview-paper::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 6px;
-  background: linear-gradient(90deg, var(--navy), var(--gold));
-  border-radius: 4px 4px 0 0;
+  display: none;
 }
 
 .preview-school-name {
@@ -792,7 +648,7 @@ textarea:focus {
   font-weight: 700;
   text-align: center;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 0;
   margin-bottom: 2px;
 }
 
@@ -805,7 +661,7 @@ textarea:focus {
 .preview-exam-line {
   font-size: 12px;
   text-align: center;
-  font-weight: 600;
+  font-weight: 400;
   text-transform: uppercase;
   margin: 3px 0;
 }
@@ -819,9 +675,16 @@ textarea:focus {
 .preview-meta-row {
   display: flex;
   justify-content: space-between;
+  gap: 16px;
   font-size: 11.5px;
-  font-weight: 600;
-  margin-bottom: 20px;
+  font-weight: 400;
+  margin: 10px 0 2px;
+}
+
+.preview-duration {
+  text-align: center;
+  font-size: 11px;
+  margin-bottom: 18px;
 }
 
 .preview-body {
@@ -1267,27 +1130,7 @@ select:focus, input[type="text"]:focus, textarea:focus {
   color: #C2410C;
 }
 
-.upload-zone {
-  background:
-    linear-gradient(135deg, rgba(23,70,162,0.04), rgba(20,184,166,0.06)),
-    #FFFFFF;
-  border-color: rgba(23,70,162,0.18);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,0.8);
-}
-
-.upload-zone:hover, .upload-zone.drag-over {
-  border-color: var(--teal);
-  background: rgba(20,184,166,0.07);
-  transform: translateY(-2px);
-}
-
-.format-chip {
-  background: #EAF2FF;
-  color: var(--navy);
-}
-
 .text-entry-panel,
-.preview-strip,
 .editor-panel {
   border-color: rgba(217,226,239,0.9);
   box-shadow: var(--shadow-sm);
@@ -1296,7 +1139,6 @@ select:focus, input[type="text"]:focus, textarea:focus {
 .btn,
 .export-btn,
 .tool-btn,
-.camera-close,
 .source-card {
   will-change: transform;
 }
@@ -1419,18 +1261,6 @@ select:focus, input[type="text"]:focus, textarea:focus {
   background: #F0FDFA;
 }
 
-.camera-overlay.show {
-  animation: fadeIn 0.18s ease both;
-}
-
-.camera-panel {
-  animation: modalRise 0.24s ease both;
-}
-
-.camera-header {
-  background: linear-gradient(135deg, var(--navy), var(--teal));
-}
-
 .toast {
   background: rgba(15,23,42,0.96);
   border: 1px solid rgba(255,255,255,0.08);
@@ -1474,7 +1304,7 @@ select:focus, input[type="text"]:focus, textarea:focus {
     <div class="logo-icon">📄</div>
     <div>
       <div class="logo-text">Docu<span>Scan</span></div>
-      <div class="tagline">Snap · Convert · Edit · Print</div>
+          <div class="tagline">Prepare · Edit · Print</div>
     </div>
   </div>
   <div class="school-badge">
@@ -1488,7 +1318,7 @@ select:focus, input[type="text"]:focus, textarea:focus {
     <div class="step-num">1</div> Exam Details
   </div>
   <div class="step-tab" data-step="2">
-    <div class="step-num">2</div> Add Content
+    <div class="step-num">2</div> Gemini Guide
   </div>
   <div class="step-tab" data-step="3">
     <div class="step-num">3</div> Extract & Edit
@@ -1505,7 +1335,7 @@ select:focus, input[type="text"]:focus, textarea:focus {
   <div class="section active" id="step1">
     <div class="card">
       <div class="card-title">Examination Details</div>
-      <div class="card-subtitle">Fill in the details for this examination paper before uploading your questions.</div>
+      <div class="card-subtitle">Fill in the exam details to get your Gemini transcription guide.</div>
 
       <div class="progress-bar-wrap">
         <div class="progress-bar-fill" style="width:25%"></div>
@@ -1514,10 +1344,10 @@ select:focus, input[type="text"]:focus, textarea:focus {
       <div class="workflow-hero">
         <div>
           <span class="workflow-kicker">Teacher workflow</span>
-          <div class="workflow-title">Snap handwritten exam pages and turn them into editable papers.</div>
+          <div class="workflow-title">Use Gemini to transcribe exam pages, then edit and export the paper.</div>
         </div>
         <div class="workflow-pills">
-          <span>Camera OCR</span>
+          <span>Gemini Transcription</span>
           <span>Edit</span>
           <span>Share</span>
         </div>
@@ -1629,79 +1459,46 @@ select:focus, input[type="text"]:focus, textarea:focus {
 
       <div class="btn-row">
         <button class="btn btn-primary" onclick="goToStep2()">
-          Continue to Upload →
+          Continue to Gemini Guide →
         </button>
       </div>
     </div>
   </div>
 
-  <!-- STEP 2: UPLOAD IMAGE -->
+  <!-- STEP 2: GEMINI TRANSCRIPTION GUIDE -->
   <div class="section" id="step2">
     <div class="card">
-      <div class="card-title">Add Question Content</div>
-      <div class="card-subtitle">Use your camera, upload an image, or paste existing text. We'll prepare it for editing.</div>
+      <div class="card-title">Open Gemini to Transcribe Your Exam</div>
+      <div class="card-subtitle">Your photos stay on your phone. Attach them directly in Gemini, then paste the transcription back here.</div>
 
       <div class="progress-bar-wrap">
         <div class="progress-bar-fill" style="width:50%"></div>
       </div>
 
-      <input class="hidden-input" type="file" id="uploadInput" accept=".jpg,.jpeg,.png,.webp,image/*"
-             multiple onchange="handleFileSelect(event)" />
-      <input class="hidden-input" type="file" id="textFileInput" accept=".txt,text/plain"
-             onchange="handleTextFileSelect(event)" />
-
-      <div class="source-options" aria-label="Choose content source">
-        <button type="button" class="source-card" onclick="openCameraInput()">
-          <span class="source-icon">📷</span>
-          <span class="source-title">Use Camera</span>
-          <span class="source-desc">Capture a page with your phone or device camera.</span>
-        </button>
-        <button type="button" class="source-card" onclick="openUploadInput()">
-          <span class="source-icon">⇧</span>
-          <span class="source-title">Upload Image</span>
-          <span class="source-desc">Choose JPG, PNG, or WEBP scans from mobile or desktop.</span>
-        </button>
-        <button type="button" class="source-card" onclick="toggleTextEntry()">
-          <span class="source-icon">T</span>
-          <span class="source-title">Upload Text</span>
-          <span class="source-desc">Paste typed questions or import a plain text file.</span>
-        </button>
-      </div>
-
-      <div class="upload-zone" id="uploadZone"
-           onclick="openUploadInput()"
-           ondragover="handleDragOver(event)"
-           ondragleave="handleDragLeave(event)"
-           ondrop="handleDrop(event)">
-        <span class="upload-icon">▦</span>
-        <div class="upload-primary">Drag & drop up to 5 images here</div>
-        <div class="upload-secondary">or click here to browse your device</div>
-        <div class="upload-formats">
-          <span class="format-chip">JPG</span>
-          <span class="format-chip">JPEG</span>
-          <span class="format-chip">PNG</span>
-          <span class="format-chip">WEBP</span>
+      <div class="manual-ai-panel" id="manualAiPanel" aria-live="polite">
+        <h3>Use Gemini to transcribe your exam</h3>
+        <ol>
+          <li>Tap <strong>Open Gemini</strong> and keep this DocuScan tab open.</li>
+          <li>In Gemini, tap the <strong>+</strong> or attachment button. Take photos or choose them from your phone's gallery. Attach up to 10 images in one message.</li>
+          <li>Copy the prompt below, paste it into Gemini, and send it with your images.</li>
+          <li>Copy Gemini's transcription, return to this tab, and paste it into the response box.</li>
+        </ol>
+        <p>Have more than 10 pages? Send them in batches of up to 10. Ask Gemini to continue the transcription in page order, then combine the responses before pasting them here.</p>
+        <div class="manual-ai-actions">
+          <button type="button" class="btn btn-primary" onclick="openManualAI()">Open Gemini</button>
+          <button type="button" class="btn btn-outline btn-sm" onclick="copyManualTranscriptionPrompt()">Copy transcription prompt</button>
         </div>
-      </div>
-
-      <div class="text-entry-panel" id="textEntryPanel">
-        <textarea id="directTextInput" placeholder="Paste or type the examination questions here..."></textarea>
-        <div class="text-entry-actions">
-          <button type="button" class="btn btn-outline btn-sm" onclick="openTextFileInput()">Upload .TXT</button>
-          <button type="button" class="btn btn-primary btn-sm" onclick="useDirectText()">Use This Text</button>
+        <label for="manualTranscriptionPrompt">Prompt to paste into Gemini</label>
+        <textarea id="manualTranscriptionPrompt" readonly></textarea>
+        <label for="manualTranscriptionText">Paste Gemini's transcription here</label>
+        <textarea id="manualTranscriptionText" placeholder="Paste the copied transcription here..."></textarea>
+        <div class="manual-ai-actions">
+          <button type="button" class="btn btn-primary" onclick="useManualTranscription()">Continue to Exam Editor</button>
         </div>
-      </div>
-
-      <div class="preview-strip" id="previewStrip" style="display:none;">
-        <div id="previewGrid" class="preview-grid"></div>
-        <button class="remove-img" onclick="removeImage()" title="Clear all images">✕</button>
       </div>
 
       <div class="btn-row">
         <button type="button" class="btn btn-outline" onclick="goToStep(1)">← Back</button>
-        <button type="button" class="btn btn-primary" id="extractBtn" onclick="startOCR()" style="display:none;">
-          🔍 Extract Text
-        </button>
       </div>
     </div>
   </div>
@@ -1711,34 +1508,17 @@ select:focus, input[type="text"]:focus, textarea:focus {
     <div class="card" style="padding:0; overflow:hidden;">
       <div style="padding:28px 32px 20px;">
         <div class="card-title">Extract & Edit Questions</div>
-        <div class="card-subtitle">Your questions have been extracted. Review and correct any errors in the editor on the right.</div>
+        <div class="card-subtitle">Review Gemini's transcription, correct any errors, and prepare the exam paper.</div>
         <div class="progress-bar-wrap">
           <div class="progress-bar-fill" style="width:75%"></div>
         </div>
       </div>
 
-      <!-- OCR Loader -->
-      <div class="ocr-loader" id="ocrLoader">
-        <div class="spinner"></div>
-        <div class="loader-text">Extracting text from your image…</div>
-        <div class="loader-sub" id="ocrLoaderSub">Processing with Google Vision API</div>
-      </div>
-
       <!-- Editor Layout -->
       <div class="editor-layout" id="editorLayout" style="display:none; padding:0 28px 28px;">
-        <!-- LEFT: Original image -->
         <div class="editor-panel">
           <div class="panel-header">
-            📷 Original Image
-            <span class="badge">Reference</span>
-          </div>
-          <img class="panel-img" id="editorImg" src="" alt="Original" />
-        </div>
-
-        <!-- RIGHT: Editable text -->
-        <div class="editor-panel">
-          <div class="panel-header">
-            ✏️ Extracted Text
+            ✏️ Exam Questions
             <span class="badge">Editable</span>
           </div>
           <div class="editor-toolbar">
@@ -1750,12 +1530,14 @@ select:focus, input[type="text"]:focus, textarea:focus {
             <button class="tool-btn" onclick="clearEditor()" title="Clear all text">🗑 Clear</button>
           </div>
           <!-- Exam Header (non-editable display) -->
-          <div class="exam-header-block" id="examHeaderDisplay" style="padding:16px 20px 14px; background:white; border-bottom:1.5px solid var(--mist);">
+          <div class="exam-header-block" id="examHeaderDisplay">
             <div class="school-name-display">GREAT TURNING POINT INTERNATIONAL SCHOOL</div>
-            <div class="school-address-display">UMUODE, OSISIOMA NGWA L.G.A, ABIA STATE</div>
-            <div class="exam-meta-display" id="hdrTermSession">3RD TERM EXAMINATION, 2026/2027 ACADEMIC SESSION</div>
-            <div class="exam-meta-display" id="hdrSubject">SUBJECT: —</div>
-            <div class="exam-meta-display" id="hdrClass">CLASS: —</div>
+            <div class="school-address-display">UMUODE, OSISIOMA NGWA L.G.A., ABIA STATE.</div>
+            <div class="exam-meta-display" id="hdrTermSession"></div>
+            <div class="exam-header-fields">
+              <span id="hdrSubject">SUBJECT: —</span>
+              <span id="hdrClass">CLASS: —</span>
+            </div>
             <div class="exam-meta-display" id="hdrDuration">DURATION: —</div>
           </div>
           <!-- Editable content -->
@@ -1784,15 +1566,14 @@ select:focus, input[type="text"]:focus, textarea:focus {
 
       <!-- Paper preview -->
       <div class="preview-paper" id="previewPaper">
-        <div class="preview-school-name">Great Turning Point International School</div>
-        <div class="preview-school-address">Umuode, Osisioma Ngwa L.G.A, Abia State</div>
+        <div class="preview-school-name">GREAT TURNING POINT INTERNATIONAL SCHOOL</div>
+        <div class="preview-school-address">UMUODE, OSISIOMA NGWA L.G.A., ABIA STATE.</div>
         <div class="preview-exam-line" id="pvTermSession"></div>
-        <hr class="preview-divider" />
         <div class="preview-meta-row">
           <span id="pvSubject"></span>
           <span id="pvClass"></span>
-          <span id="pvDuration"></span>
         </div>
+        <div class="preview-duration" id="pvDuration"></div>
         <div class="preview-body" id="pvBody"></div>
       </div>
 
@@ -1836,26 +1617,12 @@ select:focus, input[type="text"]:focus, textarea:focus {
 
 </main>
 
+<footer class="app-footer">
+  Copyright &copy; 2026 <strong>DocuScan</strong>. All rights reserved.
+</footer>
+
 <!-- Toast -->
 <div class="toast" id="toast"></div>
-
-<!-- Camera Capture -->
-<div class="camera-overlay" id="cameraOverlay" aria-hidden="true">
-  <div class="camera-panel" role="dialog" aria-modal="true" aria-label="Camera capture">
-    <div class="camera-header">
-      <div class="camera-title">Capture Question Paper</div>
-      <button type="button" class="camera-close" onclick="closeCamera()" aria-label="Close camera">×</button>
-    </div>
-    <div class="camera-body">
-      <video id="cameraVideo" autoplay playsinline muted></video>
-      <canvas id="cameraCanvas" style="display:none;"></canvas>
-    </div>
-    <div class="camera-actions">
-      <button type="button" class="btn btn-outline" onclick="closeCamera()">Cancel</button>
-      <button type="button" class="btn btn-primary" onclick="captureCameraImage()">Capture Photo</button>
-    </div>
-  </div>
-</div>
 
 <!-- Print Styles -->
 <style id="printStyles">
@@ -1883,16 +1650,23 @@ select:focus, input[type="text"]:focus, textarea:focus {
 /* ================================================================
    STATE
    ================================================================ */
-const MAX_IMAGE_UPLOADS = 5;
-let cameraStream = null;
-
 let appState = {
   currentStep: 1,
-  imageFiles: [],
-  imageDataURLs: [],
   extractedText: '',
   details: {}
 };
+
+const EXAM_SCHOOL_NAME = 'GREAT TURNING POINT INTERNATIONAL SCHOOL';
+const EXAM_SCHOOL_ADDRESS = 'UMUODE, OSISIOMA NGWA L.G.A., ABIA STATE.';
+
+function getExamHeaderDetails(details = appState.details) {
+  return {
+    termSession: `${details.term || ''} EXAMINATION, ${details.session || ''} ACADEMIC SESSION.`,
+    subject: `SUBJECT: ${details.subject || ''}`,
+    examClass: `CLASS: ${details.cls || ''}`,
+    duration: `DURATION: ${details.duration || ''}`
+  };
+}
 
 /* ================================================================
    STEP NAVIGATION
@@ -1932,6 +1706,7 @@ function goToStep2() {
 
   appState.details = { term, session, subject, cls, duration };
   updateHeaderDisplay();
+  document.getElementById('manualTranscriptionPrompt').value = buildManualTranscriptionPrompt();
   goToStep(2);
 }
 
@@ -1949,383 +1724,52 @@ function handleSubjectChange(sel) {
 }
 
 /* ================================================================
-   STEP 2: IMAGE UPLOAD
+   STEP 2: GEMINI TRANSCRIPTION
    ================================================================ */
-async function openCameraInput() {
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-    showToast('Camera access is not available in this browser. Try Chrome, Edge, or Safari over HTTPS.', 'error');
+function buildManualTranscriptionPrompt() {
+  const { term, session, subject, cls } = appState.details;
+  return `Transcribe all readable text from the attached exam page images in page order. This is the ${term} examination for ${cls}, ${subject}, ${session} academic session. Preserve the original wording, numbering, section headings, answer choices, symbols, and line breaks as closely as possible. Do not answer, solve, summarize, or invent content. Mark unreadable words as [unclear]. Return only the transcription.`;
+}
+
+function openManualAI() {
+  const aiTab = window.open('https://gemini.google.com/app', '_blank');
+  if (aiTab) aiTab.opener = null;
+
+  if (!aiTab) {
+    showToast('Your browser blocked the new tab. Allow pop-ups for DocuScan, then choose the AI chat again.', 'error');
     return;
   }
 
-  if (appState.imageDataURLs.length >= MAX_IMAGE_UPLOADS) {
-    showToast(`You can capture up to ${MAX_IMAGE_UPLOADS} images only.`, 'error');
-    return;
-  }
+  showToast('Gemini opened. Attach your exam photos there, then paste the prompt.', 'info');
+}
 
+async function copyManualTranscriptionPrompt() {
+  const prompt = document.getElementById('manualTranscriptionPrompt');
+  prompt.value = buildManualTranscriptionPrompt();
   try {
-    const overlay = document.getElementById('cameraOverlay');
-    const video = document.getElementById('cameraVideo');
-    overlay.classList.add('show');
-    overlay.setAttribute('aria-hidden', 'false');
-
-    cameraStream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: { ideal: 'environment' },
-        width: { ideal: 1600 },
-        height: { ideal: 1200 }
-      },
-      audio: false
-    });
-
-    video.srcObject = cameraStream;
-    await video.play();
-  } catch (err) {
-    closeCamera();
-    console.error('[camera] Unable to open camera:', err);
-    showToast('Camera permission was denied or no camera was found.', 'error');
+    await navigator.clipboard.writeText(prompt.value);
+    showToast('Transcription prompt copied. Paste it into the AI chat.', 'success');
+  } catch (error) {
+    prompt.focus();
+    prompt.select();
+    showToast('Copy was blocked. The prompt is selected; copy it and paste it into the AI chat.', 'info');
   }
 }
 
-function closeCamera() {
-  const overlay = document.getElementById('cameraOverlay');
-  const video = document.getElementById('cameraVideo');
+function useManualTranscription() {
+  const text = document.getElementById('manualTranscriptionText').value.trim();
+  if (!text) return showToast('Paste the AI transcription here first.', 'error');
 
-  if (cameraStream) {
-    cameraStream.getTracks().forEach(track => track.stop());
-    cameraStream = null;
-  }
-
-  video.srcObject = null;
-  overlay.classList.remove('show');
-  overlay.setAttribute('aria-hidden', 'true');
-}
-
-function captureCameraImage() {
-  const video = document.getElementById('cameraVideo');
-  if (!video.videoWidth || !video.videoHeight) {
-    showToast('Camera is still starting. Please try again in a moment.', 'info');
-    return;
-  }
-
-  if (appState.imageDataURLs.length >= MAX_IMAGE_UPLOADS) {
-    closeCamera();
-    showToast(`You can capture up to ${MAX_IMAGE_UPLOADS} images only.`, 'error');
-    return;
-  }
-
-  const canvas = document.getElementById('cameraCanvas');
-  canvas.width = video.videoWidth;
-  canvas.height = video.videoHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-  const dataURL = canvas.toDataURL('image/jpeg', 0.92);
-  addImageDataURLs([dataURL]);
-  closeCamera();
-  showToast('Camera photo captured. Click Extract Text to proceed.', 'success');
-}
-
-function openUploadInput() {
-  document.getElementById('uploadInput').click();
-}
-
-function openTextFileInput() {
-  document.getElementById('textFileInput').click();
-}
-
-function toggleTextEntry() {
-  const panel = document.getElementById('textEntryPanel');
-  panel.classList.toggle('show');
-  if (panel.classList.contains('show')) {
-    document.getElementById('directTextInput').focus();
-  }
-}
-
-function handleDragOver(e) {
-  e.preventDefault();
-  document.getElementById('uploadZone').classList.add('drag-over');
-}
-
-function handleDragLeave(e) {
-  document.getElementById('uploadZone').classList.remove('drag-over');
-}
-
-function handleDrop(e) {
-  e.preventDefault();
-  e.stopPropagation();
-  document.getElementById('uploadZone').classList.remove('drag-over');
-  const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
-  if (files.length) {
-    loadImageFiles(files);
-  } else {
-    showToast('Please drop one or more image files (JPG, PNG, WEBP).', 'error');
-  }
-}
-
-function handleFileSelect(e) {
-  const files = Array.from(e.target.files).filter(file => file.type.startsWith('image/'));
-  if (files.length) {
-    loadImageFiles(files);
-  } else {
-    showToast('Please choose one or more image files (JPG, PNG, WEBP).', 'error');
-  }
-  e.target.value = '';
-}
-
-function handleTextFileSelect(e) {
-  const file = e.target.files && e.target.files[0];
-  if (!file) return;
-
-  if (file.type && file.type !== 'text/plain') {
-    showToast('Please upload a plain .txt file.', 'error');
-    e.target.value = '';
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = event => {
-    document.getElementById('directTextInput').value = event.target.result || '';
-    document.getElementById('textEntryPanel').classList.add('show');
-    showToast('Text file loaded. Review it, then continue.', 'success');
-  };
-  reader.onerror = () => showToast('Unable to read this text file.', 'error');
-  reader.readAsText(file);
-  e.target.value = '';
-}
-
-function useDirectText() {
-  const text = document.getElementById('directTextInput').value.trim();
-  if (!text) return showToast('Please paste or upload text first.', 'error');
-
-  appState.imageFiles = [];
-  appState.imageDataURLs = [];
   appState.extractedText = text;
-  document.getElementById('previewGrid').innerHTML = '';
-  document.getElementById('previewStrip').style.display = 'none';
-  document.getElementById('extractBtn').style.display = 'none';
   goToStep(3);
-  renderEditor(text, 'Text loaded successfully!');
-}
-
-function loadImageFiles(files) {
-  if (files.length > MAX_IMAGE_UPLOADS) {
-    showToast(`Please select up to ${MAX_IMAGE_UPLOADS} images only.`, 'error');
-    clearSourceInputs();
-    return;
-  }
-
-  // Multi-file upload: preserve the selected image files and render previews
-  const selected = files;
-
-  Promise.all(selected.map(file => new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = (e) => resolve(e.target.result);
-    reader.onerror = (err) => reject(err);
-    reader.readAsDataURL(file);
-  })))
-    .then(imageDataURLs => {
-      appState.imageFiles = selected;
-      addImageDataURLs(imageDataURLs, false);
-      console.log('[ocr] Images loaded:', selected.map(f => f.name));
-      showToast(`${imageDataURLs.length} image(s) loaded. Click "Extract Text" to proceed.`, 'info');
-    })
-    .catch(err => {
-      console.error('[ocr] Failed to load images', err);
-      showToast('Unable to load one or more images. Please try again.', 'error');
-    });
-}
-
-function addImageDataURLs(imageDataURLs, append = true) {
-  const nextImages = append
-    ? [...appState.imageDataURLs, ...imageDataURLs]
-    : imageDataURLs;
-
-  if (nextImages.length > MAX_IMAGE_UPLOADS) {
-    showToast(`Please use up to ${MAX_IMAGE_UPLOADS} images only.`, 'error');
-    return;
-  }
-
-  appState.imageDataURLs = nextImages;
-  renderPreviewGrid(appState.imageDataURLs);
-  document.getElementById('previewStrip').style.display = 'block';
-  document.getElementById('extractBtn').style.display = 'inline-flex';
-}
-
-function renderPreviewGrid(imageDataURLs) {
-  const previewGrid = document.getElementById('previewGrid');
-  previewGrid.innerHTML = '';
-
-  // Preview rendering: show thumbnails for every selected image before OCR starts
-  imageDataURLs.forEach((dataURL, index) => {
-    const thumb = document.createElement('div');
-    thumb.className = 'preview-thumb';
-    thumb.innerHTML = `
-      <img src="${dataURL}" alt="Page ${index + 1}" />
-      <span>Page ${index + 1}</span>
-    `;
-    previewGrid.appendChild(thumb);
-  });
-}
-
-function removeImage() {
-  appState.imageFiles = [];
-  appState.imageDataURLs = [];
-  document.getElementById('previewGrid').innerHTML = '';
-  document.getElementById('previewStrip').style.display = 'none';
-  document.getElementById('extractBtn').style.display = 'none';
-  clearSourceInputs();
-}
-
-function clearSourceInputs() {
-  ['uploadInput', 'textFileInput'].forEach(id => {
-    const input = document.getElementById(id);
-    if (input) input.value = '';
-  });
-}
-
-/* ================================================================
-   STEP 3: OCR (Netlify Function + Google Vision API)
-   Backend architecture: Frontend → Netlify Function → Google Vision
-   API key is secure in Netlify environment variables.
-   ================================================================ */
-
-const OCR_ENDPOINT = '/.netlify/functions/ocr';
-const OCR_TIMEOUT = 60000; // 60 seconds
-
-async function startOCR() {
-  if (!appState.imageDataURLs.length) {
-    return showToast('Please upload at least one image first.', 'error');
-  }
-  goToStep(3);
-
-  document.getElementById('ocrLoader').style.display = 'flex';
-  document.getElementById('editorLayout').style.display = 'none';
-
-  try {
-    console.log('[ocr] Starting OCR request for', appState.imageDataURLs.length, 'image(s)');
-    let combinedText = '';
-    const total = appState.imageDataURLs.length;
-
-    // OCR loop: process each selected image sequentially to avoid rate limits
-    for (let i = 0; i < total; i++) {
-      const pageNumber = i + 1;
-      document.getElementById('ocrLoaderSub').textContent = `Processing page ${pageNumber} of ${total}...`;
-      const pageText = await callNetlifyOCR(appState.imageDataURLs[i]);
-
-      // Progress updates: show the current page being processed
-      combinedText += `\n\n===== PAGE ${pageNumber} =====\n\n${pageText.trim()}`;
-    }
-
-    // Final text merging: combine all OCR results into one document for editing
-    combinedText = combinedText.trim();
-    console.log('[ocr] Combined text length:', combinedText.length);
-    appState.extractedText = combinedText;
-    renderEditor(combinedText);
-  } catch (err) {
-    console.error('[ocr] OCR error:', err);
-    showToast('OCR processing failed: ' + (err.message || err), 'error');
-    appState.extractedText = '';
-    renderEditor('');
-  }
-}
-
-async function callNetlifyOCR(imageDataURL) {
-  const loaderSub = document.getElementById('ocrLoaderSub');
-  const originalText = loaderSub.textContent;
-  
-  try {
-    // Validate image data: require a full data URL string with header and base64 payload
-    if (typeof imageDataURL !== 'string' || !imageDataURL.startsWith('data:image/')) {
-      throw new Error('Invalid image format: expected data URL string');
-    }
-
-    // Check if running on localhost or deployed
-    const isLocalhost = window.location.hostname === 'localhost' || 
-                        window.location.hostname === '127.0.0.1';
-    const isDev = typeof process !== 'undefined' && process?.env?.NODE_ENV === 'development';
-
-    loaderSub.textContent = 'Uploading image…';
-    console.log('[ocr] Preparing upload to OCR endpoint');
-    console.log('[ocr] ImageData prefix:', imageDataURL.substring(0, 80));
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), OCR_TIMEOUT);
-
-    // Send request to Netlify Function with the full data URL string
-    const response = await fetch(OCR_ENDPOINT, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ imageData: imageDataURL }),
-      signal: controller.signal
-    });
-
-    clearTimeout(timeoutId);
-
-    // Handle network/timeout errors
-    if (!response.ok) {
-      const errorText = await response.text().catch(() => '');
-      let errorData = {};
-      try { errorData = JSON.parse(errorText); } catch (e) {}
-      const errorMsg = errorData.error || errorText || `HTTP ${response.status}`;
-
-      if (response.status === 404) {
-        throw new Error('OCR function not found. Ensure Netlify Functions are deployed.');
-      } else if (response.status === 500) {
-        throw new Error('Server error: ' + errorMsg);
-      } else if (response.status === 413) {
-        throw new Error('Image file is too large (max 20MB)');
-      } else {
-        throw new Error(errorMsg);
-      }
-    }
-
-    // Parse response
-    let data;
-    try {
-      data = await response.json();
-    } catch (e) {
-      throw new Error('Invalid response from OCR service');
-    }
-
-    console.log('[ocr] OCR service response:', data);
-    // Prefer `data.text` returned by the function (backend may or may not include `success`)
-    const extractedText = (data && typeof data.text === 'string') ? data.text : (data?.result || '');
-    if (data && data.success === false) {
-      throw new Error(data.error || 'OCR service returned an error');
-    }
-    
-    if (!extractedText.trim()) {
-      console.warn('Warning: No text detected in image');
-      return '';
-    }
-
-    loaderSub.textContent = 'Processing complete…';
-    return extractedText;
-
-  } catch (err) {
-    loaderSub.textContent = originalText;
-    
-    if (err.name === 'AbortError') {
-      throw new Error('Request timeout. Image processing took too long.');
-    }
-    
-    if (err instanceof TypeError && err.message.includes('Failed to fetch')) {
-      throw new Error('Network error. Check your connection and ensure OCR endpoint is available.');
-    }
-    
-    throw err;
-  }
+  renderEditor(text, 'AI transcription loaded. Review it for accuracy.');
 }
 
 function renderEditor(text, successMessage = 'Text extracted successfully!') {
-  document.getElementById('ocrLoader').style.display = 'none';
   document.getElementById('editorLayout').style.display = 'grid';
-  document.getElementById('editorImg').src = appState.imageDataURLs[0] || '';
   document.getElementById('examEditor').value = text || '';
   updateHeaderDisplay();
-  showToast(successMessage, 'success');
+  if (successMessage) showToast(successMessage, 'success');
 }
 
 /* ================================================================
@@ -2334,12 +1778,11 @@ function renderEditor(text, successMessage = 'Text extracted successfully!') {
 function updateHeaderDisplay() {
   const d = appState.details;
   if (!d.term) return;
-
-  document.getElementById('hdrTermSession').textContent =
-    `${d.term} EXAMINATION, ${d.session} ACADEMIC SESSION`;
-  document.getElementById('hdrSubject').textContent   = `SUBJECT: ${d.subject}`;
-  document.getElementById('hdrClass').textContent     = `CLASS: ${d.cls}`;
-  document.getElementById('hdrDuration').textContent  = `DURATION: ${d.duration}`;
+  const header = getExamHeaderDetails(d);
+  document.getElementById('hdrTermSession').textContent = header.termSession;
+  document.getElementById('hdrSubject').textContent = header.subject;
+  document.getElementById('hdrClass').textContent = header.examClass;
+  document.getElementById('hdrDuration').textContent = header.duration;
 }
 
 /* ================================================================
@@ -2428,11 +1871,11 @@ function goToPreview() {
   if (!text) return showToast('Please add some content to the editor.', 'error');
 
   const d = appState.details;
-  document.getElementById('pvTermSession').textContent =
-    `${d.term} EXAMINATION — ${d.session} ACADEMIC SESSION`;
-  document.getElementById('pvSubject').textContent  = `SUBJECT: ${d.subject}`;
-  document.getElementById('pvClass').textContent    = `CLASS: ${d.cls}`;
-  document.getElementById('pvDuration').textContent = `DURATION: ${d.duration}`;
+  const header = getExamHeaderDetails(d);
+  document.getElementById('pvTermSession').textContent = header.termSession;
+  document.getElementById('pvSubject').textContent = header.subject;
+  document.getElementById('pvClass').textContent = header.examClass;
+  document.getElementById('pvDuration').textContent = header.duration;
   document.getElementById('pvBody').textContent     = text;
 
   goToStep(4);
@@ -2449,6 +1892,7 @@ function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const d = appState.details;
+  const header = getExamHeaderDetails(d);
   const margin = 20;
   const pageW  = 210;
   const lineW  = pageW - margin * 2;
@@ -2458,31 +1902,27 @@ function downloadPDF() {
 
   // School name
   doc.setFontSize(13);
-  doc.text('GREAT TURNING POINT INTERNATIONAL SCHOOL', pageW / 2, 24, { align: 'center' });
+  doc.text(EXAM_SCHOOL_NAME, pageW / 2, 24, { align: 'center' });
 
   // Address
   doc.setFont('times', 'normal');
   doc.setFontSize(10);
-  doc.text('UMUODE, OSISIOMA NGWA L.G.A, ABIA STATE', pageW / 2, 31, { align: 'center' });
+  doc.text(EXAM_SCHOOL_ADDRESS, pageW / 2, 31, { align: 'center' });
 
   // Term / Session
   doc.setFont('times', 'bold');
   doc.setFontSize(11);
-  doc.text(`${d.term} EXAMINATION, ${d.session} ACADEMIC SESSION`, pageW / 2, 39, { align: 'center' });
-
-  // Divider
-  doc.setDrawColor(27, 42, 94);
-  doc.setLineWidth(0.6);
-  doc.line(margin, 43, pageW - margin, 43);
+  doc.text(header.termSession, pageW / 2, 39, { align: 'center' });
 
   // Meta row
   doc.setFontSize(10);
-  doc.text(`SUBJECT: ${d.subject}`, margin, 50);
-  doc.text(`CLASS: ${d.cls}`, pageW / 2, 50, { align: 'center' });
-  doc.text(`DURATION: ${d.duration}`, pageW - margin, 50, { align: 'right' });
+  doc.text(header.subject, margin, 49);
+  doc.text(header.examClass, pageW - margin, 49, { align: 'right' });
+  doc.text(header.duration, pageW / 2, 56, { align: 'center' });
 
-  doc.setLineWidth(0.3);
-  doc.line(margin, 54, pageW - margin, 54);
+  doc.setDrawColor(27, 42, 94);
+  doc.setLineWidth(0.6);
+  doc.line(margin, 62, pageW - margin, 62);
 
   // Body text
   doc.setFont('times', 'normal');
@@ -2490,7 +1930,7 @@ function downloadPDF() {
   const bodyText = document.getElementById('examEditor').value;
   const lines = doc.splitTextToSize(bodyText, lineW);
 
-  let y = 62;
+  let y = 70;
   const lineH = 6.5;
   lines.forEach(line => {
     if (y > 275) {
@@ -2508,18 +1948,18 @@ function downloadPDF() {
 
 function copyText() {
   const d = appState.details;
-  const header = [
-    'GREAT TURNING POINT INTERNATIONAL SCHOOL',
-    'UMUODE, OSISIOMA NGWA L.G.A, ABIA STATE',
-    `${d.term} EXAMINATION, ${d.session} ACADEMIC SESSION`,
-    `SUBJECT: ${d.subject}`,
-    `CLASS: ${d.cls}`,
-    `DURATION: ${d.duration}`,
+  const headerDetails = getExamHeaderDetails(d);
+  const headerText = [
+    EXAM_SCHOOL_NAME,
+    EXAM_SCHOOL_ADDRESS,
+    headerDetails.termSession,
+    `${headerDetails.subject}    ${headerDetails.examClass}`,
+    headerDetails.duration,
     '',
     document.getElementById('examEditor').value
   ].join('\n');
 
-  navigator.clipboard.writeText(header).then(() => {
+  navigator.clipboard.writeText(headerText).then(() => {
     showToast('Examination text copied to clipboard!', 'success');
   }).catch(() => {
     showToast('Copy failed. Please select and copy manually.', 'error');
@@ -2697,38 +2137,32 @@ function renderPaperToCanvas() {
   ctx.textBaseline = 'top';
   ctx.textAlign = 'center';
   ctx.font = '700 30px "Times New Roman", serif';
-  ctx.fillText('GREAT TURNING POINT INTERNATIONAL SCHOOL', width / 2, 70);
+  ctx.fillText(EXAM_SCHOOL_NAME, width / 2, 70);
 
   ctx.font = '22px "Times New Roman", serif';
-  ctx.fillText('UMUODE, OSISIOMA NGWA L.G.A, ABIA STATE', width / 2, 112);
+  ctx.fillText(EXAM_SCHOOL_ADDRESS, width / 2, 112);
 
   ctx.font = '700 24px "Times New Roman", serif';
-  ctx.fillText(`${d.term || ''} EXAMINATION, ${d.session || ''} ACADEMIC SESSION`, width / 2, 158);
-
-  ctx.strokeStyle = '#111111';
-  ctx.lineWidth = 3;
-  ctx.beginPath();
-  ctx.moveTo(margin, 210);
-  ctx.lineTo(width - margin, 210);
-  ctx.stroke();
+  const header = getExamHeaderDetails(d);
+  ctx.fillText(header.termSession, width / 2, 158);
 
   ctx.font = '700 22px "Times New Roman", serif';
   ctx.textAlign = 'left';
-  ctx.fillText(`SUBJECT: ${d.subject || ''}`, margin, 235);
-  ctx.textAlign = 'center';
-  ctx.fillText(`CLASS: ${d.cls || ''}`, width / 2, 235);
+  ctx.fillText(header.subject, margin, 235);
   ctx.textAlign = 'right';
-  ctx.fillText(`DURATION: ${d.duration || ''}`, width - margin, 235);
+  ctx.fillText(header.examClass, width - margin, 235);
+  ctx.textAlign = 'center';
+  ctx.fillText(header.duration, width / 2, 270);
 
   ctx.lineWidth = 1.5;
   ctx.beginPath();
-  ctx.moveTo(margin, 285);
-  ctx.lineTo(width - margin, 285);
+  ctx.moveTo(margin, 300);
+  ctx.lineTo(width - margin, 300);
   ctx.stroke();
 
   ctx.font = '24px "Times New Roman", serif';
   ctx.textAlign = 'left';
-  let y = 325;
+  let y = 340;
   bodyLines.forEach(line => {
     if (line === '') {
       y += paragraphGap;
@@ -2786,15 +2220,10 @@ function copyExtractedText() {
    ================================================================ */
 function startNew() {
   if (!confirm('Start a new examination? Current work will be lost.')) return;
-  closeCamera();
-  appState = { currentStep: 1, imageFiles: [], imageDataURLs: [], extractedText: '', details: {} };
+  appState = { currentStep: 1, extractedText: '', details: {} };
   document.getElementById('examEditor').value = '';
-  document.getElementById('directTextInput').value = '';
-  document.getElementById('textEntryPanel').classList.remove('show');
-  document.getElementById('previewGrid').innerHTML = '';
-  document.getElementById('previewStrip').style.display = 'none';
-  document.getElementById('extractBtn').style.display = 'none';
-  clearSourceInputs();
+  document.getElementById('manualTranscriptionPrompt').value = '';
+  document.getElementById('manualTranscriptionText').value = '';
   goToStep(1);
 }
 

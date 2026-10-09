@@ -2,19 +2,7 @@
 
 ## 5-Minute Netlify Deployment
 
-### Step 1: Get GCP Credentials
-1. [Google Cloud Console](https://console.cloud.google.com) → New Project
-2. Enable Vision API (search "Vision API" → Enable)
-3. APIs & Services → Credentials → Create Service Account
-4. Name: `docuscan-ocr` → Create & Continue
-5. Add role: "Cloud Vision API User" → Continue → Create Key
-6. Download as JSON
-7. Extract these values from JSON:
-   - `project_id`
-   - `client_email`
-   - `private_key` (with `\n`)
-
-### Step 2: Push to GitHub
+### Step 1: Push to GitHub
 ```bash
 cd docuscan
 git init
@@ -24,24 +12,21 @@ git remote add origin https://github.com/YOUR_USERNAME/docuscan
 git push -u origin main
 ```
 
-### Step 3: Deploy to Netlify
+### Step 2: Deploy to Netlify
 1. [Netlify](https://app.netlify.com) → Add new site → Import existing project
 2. Choose GitHub → Select repository
 3. Build settings: Leave defaults
-4. Click **Show advanced** → New variable
-5. Add 3 variables (from Step 1):
-   - `GOOGLE_VISION_PROJECT_ID` = your-project-id
-   - `GOOGLE_VISION_CLIENT_EMAIL` = email@project.iam.gserviceaccount.com
-   - `GOOGLE_VISION_PRIVATE_KEY` = -----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n
-6. Click **Deploy**
-7. Wait 2-3 minutes
-8. Visit your site URL (e.g., https://docuscan.netlify.app)
+4. Click **Deploy**
+5. Wait 2-3 minutes
+6. Visit your site URL (e.g., https://docuscan.netlify.app)
 
 ### Test It
 1. Fill exam form → Continue
-2. Upload image → Extract Text
-3. Check editor for extracted text
-4. Export as PDF or print
+2. Tap **Open Gemini** and keep DocuScan open
+3. In Gemini, use its attachment button to take photos or choose them from your phone gallery (up to 10 per message)
+4. Copy the supplied prompt into Gemini and send it with the images
+5. Copy Gemini's transcription back into DocuScan
+6. Review the text, then export as PDF or print
 
 ---
 
@@ -49,10 +34,10 @@ git push -u origin main
 
 | Problem | Solution |
 |---------|----------|
-| "Function not found" | Check `netlify.toml` exists, re-deploy |
-| "Auth failed" | Verify Vision API enabled in GCP Console |
-| "No text detected" | Image quality too low, try better photo |
-| "Request timeout" | Image too large, compress to < 5MB |
+| Gemini did not open | Allow pop-ups for DocuScan, then tap **Open Gemini** again |
+| A page image is missing | In Gemini, use its attachment button to take or select the missing page |
+| More than 10 pages | Process them in batches of up to 10, then combine the transcriptions |
+| Transcription is unclear | Take a clear, well-lit photo in Gemini, keeping the full page in focus |
 
 ---
 
@@ -80,13 +65,7 @@ netlify dev
 
 ## Environment Variables Cheat Sheet
 
-```
-GOOGLE_VISION_PROJECT_ID=your-project-id
-GOOGLE_VISION_CLIENT_EMAIL=your-email@project-id.iam.gserviceaccount.com
-GOOGLE_VISION_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nMIIEvQ...\n-----END PRIVATE KEY-----\n"
-```
-
-Add to Netlify dashboard: Settings → Build & Deploy → Environment
+The Gemini-tab workflow does not require an API key. The separate Netlify OCR function only needs `GEMINI_API_KEY` if it is called directly.
 
 ---
 
