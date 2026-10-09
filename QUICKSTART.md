@@ -34,7 +34,7 @@ git push -u origin main
 
 | Problem | Solution |
 |---------|----------|
-| Gemini did not open | Allow pop-ups for DocuScan, then tap **Open Gemini** again |
+| Gemini did not open | Open DocuScan in your phone's main browser (Safari or Chrome) and tap **Open Gemini** again. In-app browsers may not open external apps correctly. |
 | A page image is missing | In Gemini, use its attachment button to take or select the missing page |
 | More than 10 pages | Process them in batches of up to 10, then combine the transcriptions |
 | Transcription is unclear | Take a clear, well-lit photo in Gemini, keeping the full page in focus |

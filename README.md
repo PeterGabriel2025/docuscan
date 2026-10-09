@@ -178,7 +178,7 @@ Only configure `GEMINI_API_KEY` in Netlify if you separately use the OCR endpoin
 ### Gemini transcription workflow
 
 **Gemini did not open**
-- Allow pop-ups for DocuScan and select **Open Gemini** again.
+- Open DocuScan in your phone's main browser (Safari or Chrome) and tap **Open Gemini** again. In-app browsers may not open external apps correctly.
 
 **Page photos are not attached in Gemini**
 - In Gemini, use its attachment button to take photos or choose them from your phone's gallery.

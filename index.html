@@ -1485,7 +1485,7 @@ select:focus, input[type="text"]:focus, textarea:focus {
         </ol>
         <p>Have more than 10 pages? Send them in batches of up to 10. Ask Gemini to continue the transcription in page order, then combine the responses before pasting them here.</p>
         <div class="manual-ai-actions">
-          <button type="button" class="btn btn-primary" onclick="openManualAI()">Open Gemini</button>
+          <a class="btn btn-primary" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini</a>
           <button type="button" class="btn btn-outline btn-sm" onclick="copyManualTranscriptionPrompt()">Copy transcription prompt</button>
         </div>
         <label for="manualTranscriptionPrompt">Prompt to paste into Gemini</label>
@@ -1729,18 +1729,6 @@ function handleSubjectChange(sel) {
 function buildManualTranscriptionPrompt() {
   const { term, session, subject, cls } = appState.details;
   return `Transcribe all readable text from the attached exam page images in page order. This is the ${term} examination for ${cls}, ${subject}, ${session} academic session. Preserve the original wording, numbering, section headings, answer choices, symbols, and line breaks as closely as possible. Do not answer, solve, summarize, or invent content. Mark unreadable words as [unclear]. Return only the transcription.`;
-}
-
-function openManualAI() {
-  const aiTab = window.open('https://gemini.google.com/app', '_blank');
-  if (aiTab) aiTab.opener = null;
-
-  if (!aiTab) {
-    showToast('Your browser blocked the new tab. Allow pop-ups for DocuScan, then choose the AI chat again.', 'error');
-    return;
-  }
-
-  showToast('Gemini opened. Attach your exam photos there, then paste the prompt.', 'info');
 }
 
 async function copyManualTranscriptionPrompt() {
