@@ -1483,7 +1483,7 @@ select:focus, input[type="text"]:focus, textarea:focus {
           <li>Copy the prompt below, paste it into Gemini, and send it with your images.</li>
           <li>Copy Gemini's transcription, return to this tab, and paste it into the response box.</li>
         </ol>
-        <p>Have more than 10 pages? Send them in batches of up to 10. Ask Gemini to continue the transcription in page order, then combine the responses before pasting them here.</p>
+        <p>Have more than 10 pages? Send them in batches of up to 10. Ask Gemini to continue the transcription in page order, then combine the responses before pasting them here. For a pencil circle around text, Gemini should write it as <code>[CIRCLED:A]</code>; the downloaded PDF will draw a circle around A.</p>
         <div class="manual-ai-actions">
           <a class="btn btn-primary" href="https://gemini.google.com/app" target="_blank" rel="noopener">Open Gemini</a>
           <button type="button" class="btn btn-outline btn-sm" onclick="copyManualTranscriptionPrompt()">Copy transcription prompt</button>
@@ -1728,7 +1728,7 @@ function handleSubjectChange(sel) {
    ================================================================ */
 function buildManualTranscriptionPrompt() {
   const { term, session, subject, cls } = appState.details;
-  return `Transcribe all readable text from the attached exam page images in page order. This is the ${term} examination for ${cls}, ${subject}, ${session} academic session. Preserve the original wording, numbering, section headings, answer choices, symbols, and line breaks as closely as possible. Do not answer, solve, summarize, or invent content. Mark unreadable words as [unclear]. Return only the transcription.`;
+  return `Transcribe all readable text from the attached exam page images in page order. This is the ${term} examination for ${cls}, ${subject}, ${session} academic session. Preserve the original wording, numbering, section headings, answer choices, symbols, and line breaks as closely as possible. For any pencil-drawn circle around a letter, answer choice, or word, represent the circled content using the exact ASCII format [CIRCLED:content], for example [CIRCLED:A]. Do not use Unicode circled-letter or circle symbols. Do not answer, solve, summarize, or invent content. Mark unreadable words as [unclear]. Return only the transcription.`;
 }
 
 async function copyManualTranscriptionPrompt() {
@@ -1879,58 +1879,30 @@ function printPaper() {
 function downloadPDF() {
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const d = appState.details;
-  const header = getExamHeaderDetails(d);
-  const margin = 20;
-  const pageW  = 210;
-  const lineW  = pageW - margin * 2;
+  const paperCanvas = renderPaperToCanvas();
+  const pageWidthMm = 210;
+  const pageHeightMm = 297;
+  const pageHeightPx = Math.round(paperCanvas.width * pageHeightMm / pageWidthMm);
 
-  // Font defaults
-  doc.setFont('times', 'bold');
+  for (let pageTop = 0; pageTop < paperCanvas.height; pageTop += pageHeightPx) {
+    const pageCanvas = document.createElement('canvas');
+    pageCanvas.width = paperCanvas.width;
+    pageCanvas.height = pageHeightPx;
 
-  // School name
-  doc.setFontSize(13);
-  doc.text(EXAM_SCHOOL_NAME, pageW / 2, 24, { align: 'center' });
+    const pageContext = pageCanvas.getContext('2d');
+    pageContext.fillStyle = '#FFFFFF';
+    pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+    pageContext.drawImage(
+      paperCanvas,
+      0, pageTop, paperCanvas.width, Math.min(pageHeightPx, paperCanvas.height - pageTop),
+      0, 0, paperCanvas.width, Math.min(pageHeightPx, paperCanvas.height - pageTop)
+    );
 
-  // Address
-  doc.setFont('times', 'normal');
-  doc.setFontSize(10);
-  doc.text(EXAM_SCHOOL_ADDRESS, pageW / 2, 31, { align: 'center' });
+    doc.addImage(pageCanvas, 'PNG', 0, 0, pageWidthMm, pageHeightMm);
+    if (pageTop + pageHeightPx < paperCanvas.height) doc.addPage();
+  }
 
-  // Term / Session
-  doc.setFont('times', 'bold');
-  doc.setFontSize(11);
-  doc.text(header.termSession, pageW / 2, 39, { align: 'center' });
-
-  // Meta row
-  doc.setFontSize(10);
-  doc.text(header.subject, margin, 49);
-  doc.text(header.examClass, pageW - margin, 49, { align: 'right' });
-  doc.text(header.duration, pageW / 2, 56, { align: 'center' });
-
-  doc.setDrawColor(27, 42, 94);
-  doc.setLineWidth(0.6);
-  doc.line(margin, 62, pageW - margin, 62);
-
-  // Body text
-  doc.setFont('times', 'normal');
-  doc.setFontSize(11);
-  const bodyText = document.getElementById('examEditor').value;
-  const lines = doc.splitTextToSize(bodyText, lineW);
-
-  let y = 70;
-  const lineH = 6.5;
-  lines.forEach(line => {
-    if (y > 275) {
-      doc.addPage();
-      y = 20;
-    }
-    doc.text(line, margin, y);
-    y += lineH;
-  });
-
-  const filename = `${d.subject.replace(/\s+/g,'-')}_${d.cls.replace(/\s+/g,'-')}_${d.term.replace(/\s+/g,'-')}_${d.session}.pdf`;
-  doc.save(filename);
+  doc.save(buildPaperFilename('pdf'));
   showToast('PDF downloaded successfully!', 'success');
 }
 
@@ -2156,11 +2128,42 @@ function renderPaperToCanvas() {
       y += paragraphGap;
       return;
     }
-    ctx.fillText(line, margin, y);
+    drawTranscribedLine(ctx, line, margin, y);
     y += bodyLineHeight;
   });
 
   return canvas;
+}
+
+function drawTranscribedLine(ctx, line, x, y) {
+  const markerPattern = /\[CIRCLED:([^\]]+)\]/g;
+  const fontSize = parseFloat(ctx.font) || 24;
+  let cursorX = x;
+  let lastIndex = 0;
+  let match;
+
+  while ((match = markerPattern.exec(line)) !== null) {
+    const precedingText = line.slice(lastIndex, match.index);
+    ctx.fillText(precedingText, cursorX, y);
+    cursorX += ctx.measureText(precedingText).width;
+
+    const circledText = match[1].trim();
+    if (circledText) {
+      const textWidth = ctx.measureText(circledText).width;
+      ctx.fillText(circledText, cursorX, y);
+      ctx.beginPath();
+      ctx.ellipse(cursorX + textWidth / 2, y + fontSize * 0.55, textWidth / 2 + 6, fontSize * 0.7, 0, 0, Math.PI * 2);
+      ctx.strokeStyle = '#333333';
+      ctx.lineWidth = 2;
+      ctx.stroke();
+      cursorX += textWidth;
+    }
+
+    lastIndex = markerPattern.lastIndex;
+  }
+
+  const remainingText = line.slice(lastIndex);
+  ctx.fillText(remainingText, cursorX, y);
 }
 
 function wrapCanvasText(ctx, text, maxWidth) {
@@ -2168,7 +2171,7 @@ function wrapCanvasText(ctx, text, maxWidth) {
   const paragraphs = text.replace(/\r\n/g, '\n').split('\n');
 
   paragraphs.forEach(paragraph => {
-    const words = paragraph.trim().split(/\s+/).filter(Boolean);
+    const words = paragraph.match(/\[CIRCLED:[^\]]+\]|\S+/g) || [];
     if (!words.length) {
       lines.push('');
       return;
