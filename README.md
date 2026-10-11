@@ -19,11 +19,13 @@ A phone-friendly examination paper tool for preparing, editing, and exporting qu
   - Remove extra spaces
   - Auto-punctuation
   - Add/remove questions
+- Built-in illustration picker for adding simple sketches to questions
 
 📄 **Export Options**
 - **PDF Download** - Professional formatting with school header
 - **Print** - Direct browser print
 - **Copy** - Copy all text to clipboard
+- **Share** - Prepare a paper image for sharing
 
 🏫 **Exam Management**
 - Select term, session, subject, class, duration
@@ -163,6 +165,7 @@ Only configure `GEMINI_API_KEY` in Netlify if you separately use the OCR endpoin
 - Paste Gemini's response into DocuScan and select **Continue to Exam Editor**
 - Review and correct the questions
 - Use toolbar for quick fixes
+- Choose **Add Illustration** to search or browse the built-in picture library and insert an item at the editor cursor. Gemini's prompt includes the available illustration IDs; unknown sketch IDs appear as labeled placeholders so they can be replaced later.
 - Add/remove questions as needed
 
 ### Step 4: Preview & Export
@@ -170,6 +173,11 @@ Only configure `GEMINI_API_KEY` in Netlify if you separately use the OCR endpoin
 - Download as PDF
 - Print directly
 - Copy text to clipboard
+- Share a rendered paper image
+
+DocuScan automatically saves your exam details and transcription in this browser on this device. The header shows the save status; choose **New document** to clear the saved draft after confirming. Drafts are not synced to other devices and may be removed if browser data is cleared.
+
+The illustration library is bundled locally in `index.html` and does not use a remote image service. To extend it, add an original SVG drawing to `ILLUSTRATION_ART` and add its matching ID, display label, and category to `ILLUSTRATION_LIBRARY`. The Gemini prompt uses the library IDs automatically. Illustrations are visual approximations; review each one against the source exam before printing.
 
 ---
 

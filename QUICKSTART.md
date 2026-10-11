@@ -26,7 +26,8 @@ git push -u origin main
 3. In Gemini, use its attachment button to take photos or choose them from your phone gallery (up to 10 per message)
 4. Copy the supplied prompt into Gemini and send it with the images
 5. Copy Gemini's transcription back into DocuScan
-6. Review the text, then export as PDF or print
+6. Review the text; use **Add Illustration** to place a library picture at the editor cursor where a sketch is needed
+7. Preview the paper, then export as PDF or print
 
 ---
 
@@ -34,10 +35,12 @@ git push -u origin main
 
 | Problem | Solution |
 |---------|----------|
+| Need to continue a draft later | Reopen DocuScan in the same browser and on the same device; drafts are saved locally and are not synced |
 | Gemini did not open | Open DocuScan in your phone's main browser (Safari or Chrome) and tap **Open Gemini** again. In-app browsers may not open external apps correctly. |
 | A page image is missing | In Gemini, use its attachment button to take or select the missing page |
 | More than 10 pages | Process them in batches of up to 10, then combine the transcriptions |
 | Transcription is unclear | Take a clear, well-lit photo in Gemini, keeping the full page in focus |
+| Gemini sketch ID has no matching picture | Use **Add Illustration** to insert the closest available library picture, or leave the labeled sketch placeholder in the paper |
 
 ---
 

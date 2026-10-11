@@ -580,6 +580,147 @@ textarea:focus {
   border-color: var(--navy);
 }
 
+.illustration-dialog {
+  width: min(920px, calc(100vw - 28px));
+  max-width: none;
+  max-height: min(82vh, 760px);
+  padding: 0;
+  border: 1px solid var(--mist);
+  border-radius: 16px;
+  color: var(--ink);
+  background: #F8FAFC;
+  box-shadow: 0 24px 70px rgba(9,33,79,0.3);
+}
+
+.illustration-dialog::backdrop {
+  background: rgba(9,33,79,0.58);
+  backdrop-filter: blur(3px);
+}
+
+.illustration-dialog-inner {
+  padding: 20px;
+}
+
+.illustration-dialog-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.illustration-dialog-header h2 {
+  color: var(--navy-deep);
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+}
+
+.illustration-dialog-header p {
+  color: var(--slate);
+  font-size: 0.85rem;
+}
+
+.illustration-dialog-close {
+  flex: 0 0 auto;
+  padding: 6px 10px;
+  border: 1px solid var(--mist);
+  border-radius: 8px;
+  background: white;
+  color: var(--slate);
+  cursor: pointer;
+}
+
+.illustration-library-controls {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.illustration-search {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 12px;
+  border: 1px solid var(--mist);
+  border-radius: 9px;
+  background: white;
+  font: inherit;
+}
+
+.illustration-categories {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  padding-bottom: 3px;
+}
+
+.illustration-category {
+  flex: 0 0 auto;
+  padding: 7px 11px;
+  border: 1px solid var(--mist);
+  border-radius: 999px;
+  background: white;
+  color: var(--slate);
+  font: inherit;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.illustration-category[aria-pressed="true"] {
+  border-color: var(--navy);
+  background: var(--navy);
+  color: white;
+}
+
+.illustration-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+  gap: 9px;
+  max-height: 52vh;
+  overflow-y: auto;
+  padding: 2px 2px 8px;
+}
+
+.illustration-item {
+  display: flex;
+  min-height: 116px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 9px;
+  border: 1px solid var(--mist);
+  border-radius: 11px;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition);
+}
+
+.illustration-item:hover,
+.illustration-item:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--teal);
+  outline: none;
+  box-shadow: 0 6px 18px rgba(20,184,166,0.14);
+}
+
+.illustration-item img {
+  width: 76px;
+  height: 68px;
+  object-fit: contain;
+}
+
+.illustration-empty {
+  grid-column: 1 / -1;
+  padding: 30px 12px;
+  color: var(--slate);
+  text-align: center;
+}
+
 /* ============================================================
    EXAM HEADER BLOCK (inside editor)
    ============================================================ */
@@ -691,6 +832,25 @@ textarea:focus {
   white-space: pre-wrap;
   font-size: 12.5px;
   line-height: 1.9;
+}
+
+.preview-illustration {
+  display: inline-block;
+  width: 72px;
+  height: 64px;
+  margin: 2px 4px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.preview-illustration-missing {
+  display: inline-block;
+  padding: 3px 6px;
+  border: 1px dashed #64748b;
+  border-radius: 4px;
+  color: #475569;
+  font-size: 0.9em;
+  vertical-align: middle;
 }
 
 /* ============================================================
@@ -863,9 +1023,13 @@ textarea:focus {
 }
 
 @media (max-width: 480px) {
+  .app-header { flex-wrap: wrap; gap: 10px; padding: 12px 16px; }
+  .header-actions { width: 100%; justify-content: space-between; }
   .form-grid { grid-template-columns: 1fr; }
   .export-row { gap: 10px; }
   .export-btn { padding: 16px 20px; min-width: 100px; }
+  .illustration-dialog-inner { padding: 15px; }
+  .illustration-grid { grid-template-columns: repeat(auto-fill, minmax(92px, 1fr)); }
 }
 
 /* ============================================================
@@ -939,6 +1103,67 @@ body {
   background: rgba(20,184,166,0.13);
   border-color: rgba(125,211,252,0.35);
   color: #E0F2FE;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.draft-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: rgba(255,255,255,0.85);
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.draft-status-dot {
+  width: 8px;
+  height: 8px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.45);
+}
+
+.draft-status[data-state="saving"] .draft-status-dot {
+  background: var(--gold-light);
+  animation: draft-pulse 1s ease-in-out infinite;
+}
+
+@keyframes draft-pulse {
+  50% { opacity: 0.35; }
+}
+
+.draft-status[data-state="saved"] .draft-status-dot {
+  background: #34D399;
+}
+
+.draft-status[data-state="error"] {
+  color: #FECACA;
+}
+
+.draft-status[data-state="error"] .draft-status-dot {
+  background: #F87171;
+}
+
+.header-actions .draft-new-btn {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.35);
+  color: white;
+}
+
+.header-actions .draft-new-btn:hover {
+  border-color: #7DD3FC;
+  background: rgba(255,255,255,0.1);
+  color: white;
+}
+
+.header-actions .school-badge {
+  flex: 0 0 auto;
 }
 
 .steps-bar {
@@ -1307,8 +1532,15 @@ select:focus, input[type="text"]:focus, textarea:focus {
           <div class="tagline">Prepare · Edit · Print</div>
     </div>
   </div>
-  <div class="school-badge">
-    Great Turning Point<br>International School
+  <div class="header-actions">
+    <div class="draft-status" id="draftStatus" data-state="idle" role="status" aria-live="polite" title="Your draft is stored only in this browser on this device.">
+      <span class="draft-status-dot" aria-hidden="true"></span>
+      <span id="draftStatusText">No saved draft</span>
+    </div>
+    <button type="button" class="btn btn-outline btn-sm draft-new-btn" onclick="startNew()">New document</button>
+    <div class="school-badge">
+      Great Turning Point<br>International School
+    </div>
   </div>
 </header>
 
@@ -1526,6 +1758,7 @@ select:focus, input[type="text"]:focus, textarea:focus {
             <button class="tool-btn" onclick="fixNumbering()" title="Fix question numbering">🔢 Fix Numbers</button>
             <button class="tool-btn" onclick="removeExtraSpaces()" title="Remove extra spaces">🧹 Clean Spaces</button>
             <button class="tool-btn" onclick="addQuestion()" title="Add a new question line">＋ Add Question</button>
+            <button class="tool-btn" onclick="openIllustrationLibrary()" title="Insert an illustration at the cursor">🖼 Add Illustration</button>
             <button class="tool-btn" onclick="copyExtractedText()" title="Copy extracted text only">📋 Copy All Text</button>
             <button class="tool-btn" onclick="clearEditor()" title="Clear all text">🗑 Clear</button>
           </div>
@@ -1624,6 +1857,24 @@ select:focus, input[type="text"]:focus, textarea:focus {
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<dialog class="illustration-dialog" id="illustrationDialog" aria-labelledby="illustrationDialogTitle">
+  <div class="illustration-dialog-inner">
+    <div class="illustration-dialog-header">
+      <div>
+        <h2 id="illustrationDialogTitle">Add an illustration</h2>
+        <p>Choose a picture to insert at the editor cursor. It will appear in preview and PDF.</p>
+      </div>
+      <button type="button" class="illustration-dialog-close" onclick="closeIllustrationLibrary()">Close</button>
+    </div>
+    <div class="illustration-library-controls">
+      <label class="sr-only" for="illustrationSearch">Search illustrations</label>
+      <input class="illustration-search" id="illustrationSearch" type="search" placeholder="Search pictures, e.g. apple, cat, pencil..." oninput="renderIllustrationLibrary()" />
+      <div class="illustration-categories" id="illustrationCategories" aria-label="Illustration categories"></div>
+    </div>
+    <div class="illustration-grid" id="illustrationGrid" aria-live="polite"></div>
+  </div>
+</dialog>
+
 <!-- Print Styles -->
 <style id="printStyles">
 @media print {
@@ -1656,8 +1907,116 @@ let appState = {
   details: {}
 };
 
+const DRAFT_STORAGE_KEY = 'docuscan.localDraft.v1';
+const DRAFT_VERSION = 1;
+const DRAFT_SAVE_DELAY = 400;
+const DRAFT_FIELD_IDS = new Set([
+  'examTerm', 'examSession', 'examSubject', 'customSubject', 'examClass',
+  'examDuration', 'manualTranscriptionText', 'examEditor'
+]);
+let draftSaveTimer = null;
+let draftStorageWarningLogged = false;
+let hasStoredDraft = false;
+let isRestoringDraft = false;
+
 const EXAM_SCHOOL_NAME = 'GREAT TURNING POINT INTERNATIONAL SCHOOL';
 const EXAM_SCHOOL_ADDRESS = 'UMUODE, OSISIOMA NGWA L.G.A., ABIA STATE.';
+const ILLUSTRATION_CATEGORIES = [
+  'All', 'Fruits & Food', 'Animals', 'People', 'School', 'Home & Objects',
+  'Transport', 'Nature', 'Shapes'
+];
+const ILLUSTRATION_ART = {
+  apple: '<path fill="#ef4444" d="M48 30c-20-15-36 2-30 25 5 19 18 30 30 23 12 7 25-4 30-23 6-23-10-40-30-25Z"/><path d="M48 30c-1-10 2-17 8-22"/><path fill="#34a853" d="M50 18c9-9 18-7 21-5-3 9-10 13-20 12Z"/>',
+  banana: '<path fill="#facc15" d="M18 19c8 29 28 48 58 51-10 13-30 15-48 2C8 56 4 35 10 19Z"/><path d="M18 19 9 14m67 56 5 7"/><path fill="none" d="M20 25c12 24 29 37 50 40"/>',
+  orange: '<circle cx="48" cy="51" r="31" fill="#fb923c"/><path d="M48 20c0-7 4-12 10-15"/><path fill="#34a853" d="M53 13c8-7 16-5 19-2-4 8-11 10-19 8Z"/><path fill="none" d="M27 47c6-12 17-19 29-20"/>',
+  grapes: '<path fill="#8b5cf6" d="M38 26c-11-7-21 3-16 13-12 1-14 14-5 20-5 10 3 20 13 17 4 12 18 13 23 3 12 4 21-7 15-17 11-8 6-21-5-22 3-12-8-19-18-14Z"/><path fill="#34a853" d="M45 24c5-13 16-17 27-13-4 12-13 17-27 16Z"/><path d="M46 26c-1-7 0-12 4-17"/>',
+  pineapple: '<path fill="#facc15" d="M30 34c-13 5-17 40-3 50h42c14-10 10-45-3-50Z"/><path fill="#34a853" d="M48 35 29 8l17 13L42 4l14 17L68 7 60 31l20-12-17 25Z"/><path fill="none" d="m31 46 35 28M29 60l28 23m9-38L30 74m38-15L44 84m-12-40 32 31"/>',
+  watermelon: '<path fill="#22c55e" d="M12 38h72c-2 28-15 43-36 43S14 66 12 38Z"/><path fill="#ef4444" d="M20 42h56c-4 19-13 29-28 29S24 61 20 42Z"/><path fill="#1f2937" stroke="none" d="M39 49a2 3 0 1 0 4 0 2 3 0 1 0-4 0m14 6a2 3 0 1 0 4 0 2 3 0 1 0-4 0m-4 9a2 3 0 1 0 4 0 2 3 0 1 0-4 0"/>',
+  mango: '<path fill="#fb923c" d="M27 20c20-13 47 0 46 25-1 23-19 39-39 32C13 69 9 34 27 20Z"/><path fill="#34a853" d="M51 19c3-12 13-16 25-12-5 11-13 15-24 14Z"/><path d="M51 20c0-6 3-11 7-15"/>',
+  pear: '<path fill="#84cc16" d="M47 12c-13 0-8 19-17 27-15 13-17 38 1 44h34c18-6 16-31 1-44-9-8-4-27-19-27Z"/><path d="M49 13c1-7 4-10 9-12"/><path fill="#34a853" d="M54 7c8-7 16-5 18-3-4 7-10 10-18 9Z"/>',
+  strawberry: '<path fill="#ef4444" d="M18 28c12-13 48-13 60 0 0 23-19 52-30 57-11-5-30-34-30-57Z"/><path fill="#22c55e" d="m48 31-27-7 14-7 1-11 12 13L61 7l1 13 14 4-28 7Z"/><g fill="#fef08a" stroke="none"><circle cx="35" cy="38" r="2"/><circle cx="57" cy="38" r="2"/><circle cx="28" cy="51" r="2"/><circle cx="48" cy="51" r="2"/><circle cx="65" cy="51" r="2"/><circle cx="39" cy="65" r="2"/><circle cx="57" cy="65" r="2"/></g>',
+  carrot: '<path fill="#f97316" d="m18 22 61-9-39 72-8-1Z"/><path fill="#22c55e" d="M19 25 7 7l22 13L27 2l15 18L54 4l-4 22Z"/><path fill="none" d="m33 38 13 4m-19 8 14 4m-20 6 13 4"/>',
+  tomato: '<path fill="#ef4444" d="M48 25c-21-13-42 1-39 24 3 25 17 34 39 23 22 11 36 2 39-23 3-23-18-37-39-24Z"/><path fill="#22c55e" d="m48 29-8-14 13 7 13-10-6 16 15-2-17 11-11-8-11 9-13-8 15 1Z"/>',
+  cat: '<path fill="#f3f4f6" d="M20 38 14 13l21 12c9-4 17-4 26 0l21-12-6 27c11 25-1 43-28 43S9 63 20 38Z"/><path d="M35 51h1m24 0h1M43 59l5 4 5-4m-5 4v5m-8-8-19-2m19 7-19 3m35-8 19-2m-19 7 19 3"/><path fill="#f9a8d4" d="m42 59 6-3 6 3-6 4Z"/>',
+  dog: '<path fill="#d6a56e" d="M20 36 11 19l20 8c13-7 28-5 37 3l15-7-5 21 2 24H28l-5-18Z"/><path fill="#b77945" d="m20 34-12-8 5 25 14 5Z"/><path d="M41 43h1m19 0h1m-12 9 5 3-5 3-5-3Z M35 67v12m27-12v12"/><path fill="#1f2937" stroke="none" d="M42 43a2 3 0 1 0 4 0 2 3 0 1 0-4 0m18 0a2 3 0 1 0 4 0 2 3 0 1 0-4 0"/>',
+  fish: '<path fill="#38bdf8" d="M17 48c14-22 43-26 60 0-17 26-46 22-60 0Z"/><path fill="#f97316" d="m17 48-13-17v34Z"/><circle cx="64" cy="43" r="3" fill="#111827"/><path d="M42 34c8 10 8 18 0 28m-10-7 9-7"/>',
+  bird: '<path fill="#60a5fa" d="M15 54c4-24 34-38 55-20 13 11 8 34-8 40l16 11H48C28 83 12 72 15 54Z"/><path fill="#facc15" d="m69 38 20 7-20 7Z"/><circle cx="62" cy="37" r="2.5" fill="#111827"/><path d="M41 48c10 1 17 7 20 16M40 80l-4 8m16-8v8"/>',
+  rabbit: '<path fill="#f3f4f6" d="M28 47c-12 19-6 39 18 39s31-20 18-39c9-8 10-22 3-27-9-5-15 9-16 22-2-13-7-28-17-25-10 3-8 20-6 30Z"/><path fill="#f9a8d4" d="M34 39c-2-11-1-17 3-18 4 0 7 10 8 20m10 0c2-11 5-17 9-16 4 2 2 11-1 19Z"/><circle cx="39" cy="55" r="2" fill="#111827"/><circle cx="58" cy="55" r="2" fill="#111827"/><path d="m46 62 5 4 5-4m-7 4v5"/>',
+  goat: '<path fill="#e5e7eb" d="M22 32 10 17l20 8c13-9 34-8 45 2l11-7-5 20c4 18-8 34-31 34S16 58 22 32Z"/><path d="M28 26 22 10m44 15 7-16M39 43h1m20 0h1m-13 8 5 3-5 3-5-3Zm-9 24v8m26-8v8"/><path fill="#111827" stroke="none" d="M37 43a2 3 0 1 0 4 0 2 3 0 1 0-4 0m20 0a2 3 0 1 0 4 0 2 3 0 1 0-4 0"/>',
+  cow: '<path fill="#f8fafc" d="M22 32 11 18l20 7c12-9 32-8 44 1l10-7-5 22c5 20-8 34-32 34S16 60 22 32Z"/><path fill="#374151" stroke="none" d="m31 31 13 1-4 13-14-3Zm28 17 12-8 7 11-12 8Z"/><path fill="#f9a8d4" d="M36 55c5-10 22-10 27 0-2 11-25 11-27 0Z"/><path d="M38 42h1m23 0h1m-13 7 4 2-4 2-4-2Zm-7 26v8m24-8v8"/>',
+  chicken: '<path fill="#fef3c7" d="M25 38c-9 19 1 39 24 39 20 0 31-16 21-34-6-11-28-15-45-5Z"/><path fill="#ef4444" d="M37 25c-3-13 7-17 12-8 7-11 17-5 11 7 12-2 13 10 3 14H37Z"/><path fill="#f97316" d="m70 42 20 7-20 7Z"/><circle cx="60" cy="40" r="3" fill="#111827"/><path d="m40 75-3 9m22-9 3 9"/>',
+  elephant: '<path fill="#94a3b8" d="M15 35c0-17 20-24 42-20 19 4 26 20 23 39l-3 20H27l-4-23c-6 0-9-6-8-16Z"/><path fill="#94a3b8" d="M72 45c20 0 19 28 6 33-8 4-14-2-12-9 8 1 9-10 2-10Z"/><circle cx="61" cy="34" r="3" fill="#111827"/><path d="M38 73v10m23-10v10"/>',
+  lion: '<circle cx="48" cy="51" r="37" fill="#f59e0b"/><circle cx="48" cy="51" r="25" fill="#fcd34d"/><path d="M38 46h1m18 0h1m-12 9 4 4 4-4m-8 4v7m-18-5-10 3m53-3 10 3"/><path fill="#7c2d12" d="m43 56 5-3 5 3-5 4Z"/>',
+  butterfly: '<path fill="#c084fc" d="M47 47C32 12 7 16 13 42c3 13 18 17 34 14-27 8-33 28-18 32 13 3 19-16 20-29 1 13 7 32 20 29 15-4 9-24-18-32 16 3 31-1 34-14 6-26-19-30-34 5Z"/><path d="M48 31v43m0-34c-3-18-12-23-18-24m19 24c3-18 12-23 18-24"/>',
+  boy: '<circle cx="48" cy="23" r="15" fill="#f4c7a1"/><path fill="#3f3f46" d="M33 23c-2-20 27-24 31-4l-4 8-6-10-17 8Z"/><path fill="#38bdf8" d="m32 43 16-7 17 7 8 32H24Z"/><path fill="#1d4ed8" d="M25 73h48l-4 12H29Z"/><path d="m42 84-3 9m17-9 3 9m-22-39 11 12 12-12"/>',
+  girl: '<circle cx="48" cy="23" r="15" fill="#f4c7a1"/><path fill="#7c2d12" d="M32 25c-5-24 33-29 34-1l-7 22-8-18-18 1-5 20Z"/><path fill="#f472b6" d="m32 43 16-7 17 7 8 25H24Z"/><path fill="#a78bfa" d="M24 67h48l10 18H14Z"/><path d="m40 84-3 9m22-9 3 9"/>',
+  teacher: '<circle cx="43" cy="22" r="14" fill="#f2c6a0"/><path fill="#374151" d="M29 23c-1-19 27-21 30-3l-8-4-18 9Z"/><path fill="#2563eb" d="m28 43 15-7 17 7 4 39H25Z"/><path d="M63 48h22v19H63ZM68 54h12m-12 7h12M43 47v35m-16-26-10 17"/>',
+  pencil: '<path fill="#facc15" d="m25 72 8 9 45-48-9-9Z"/><path fill="#f97316" d="m69 24 9 9 7-8-9-9Z"/><path fill="#f3d2a2" d="m25 72-3 18 11-9Z"/><path d="m33 81 45-48"/>',
+  book: '<path fill="#38bdf8" d="M10 22c17-7 29-4 38 4v57c-10-8-23-10-38-4Zm76 0c-17-7-29-4-38 4v57c10-8 23-10 38-4Z"/><path d="M48 27v56M18 35c10-3 18-2 24 2m-24 8c10-3 18-2 24 2m34-12c-8-2-15-1-20 2m20 8c-8-2-15-1-20 2"/>',
+  ruler: '<rect x="12" y="34" width="72" height="28" rx="3" fill="#fef08a"/><path d="M22 34v15m10-15v9m10-9v15m10-15v9m10-9v15m10-15v9m10-9v15"/>',
+  clock: '<circle cx="48" cy="49" r="37" fill="#f8fafc"/><path d="M48 22v28l20 12"/><circle cx="48" cy="49" r="3" fill="#ef4444"/><path d="M48 14v5m0 60v5M13 49h5m60 0h5"/>',
+  cup: '<path fill="#e0f2fe" d="M22 24h47v49c0 8-7 12-23 12s-24-4-24-12Z"/><path d="M69 34h9c13 0 13 27 0 27h-9M30 39h31m-31 12h31m-31 12h31"/>',
+  ball: '<circle cx="48" cy="49" r="37" fill="#fef3c7"/><path d="M16 35c19 2 28-6 32-23m0 74c-4-17-13-25-32-23m64-28c-19 2-28-6-32-23m0 74c4-17 13-25 32-23M18 30l19 14m41 19L59 77M78 30 59 44M18 68l19-14"/>',
+  house: '<path fill="#fb923c" d="m9 45 39-33 39 33v41H9Z"/><path fill="#fef3c7" d="M39 58h18v28H39Zm-19-4h13v12H20Zm43 0h13v12H63Z"/><path d="m9 45 39-33 39 33M39 58h18v28H39Z"/>',
+  tree: '<path fill="#22c55e" d="M48 9 19 45h16L15 68h25v20h16V68h25L61 45h16Z"/><path fill="#92400e" d="M42 69h12v20H42Z"/>',
+  sun: '<circle cx="48" cy="49" r="22" fill="#facc15"/><path d="M48 8v15m0 52v15M7 49h15m52 0h15M19 20l11 11m36 36 11 11M77 20 66 31M30 67 19 78"/>',
+  cloud: '<path fill="#dbeafe" d="M22 73c-13 0-18-18-7-26 3-13 19-19 29-10 9-18 36-14 38 7 18 5 15 29-3 29Z"/>',
+  umbrella: '<path fill="#38bdf8" d="M10 48a38 38 0 0 1 76 0c-12-12-25-12-38 0-13-12-26-12-38 0Z"/><path d="M48 48v31c0 12 19 12 19 0m-19-31c0-13 0-23 0-33"/>',
+  flower: '<path fill="#f472b6" d="M48 37c-23-28-39-4-18 10-32 9-15 34 10 18-5 31 26 31 19 0 26 16 42-9 11-18 21-14 5-38-18-10Z"/><circle cx="49" cy="51" r="12" fill="#facc15"/><path fill="#22c55e" d="M46 63h7v29h-7Zm0 14c-13-14-22-7-20 3 8 3 15 1 20-3Zm7-5c13-14 22-7 20 3-8 3-15 1-20-3Z"/>',
+  pencilCase: '<rect x="15" y="29" width="66" height="47" rx="10" fill="#c4b5fd"/><path d="M24 29v-6c0-5 4-9 9-9h30c5 0 9 4 9 9v6m-57 13h66"/>',
+  scissors: '<circle cx="25" cy="28" r="12" fill="#fca5a5"/><circle cx="25" cy="68" r="12" fill="#93c5fd"/><path d="m34 36 48 42M34 60l48-40M44 45l-10 5 10 5"/>',
+  chair: '<path fill="#fb923c" d="M24 19h48v40H24Z"/><path d="M19 58h58v10H19Zm8 10v20m42-20v20"/>',
+  backpack: '<path fill="#38bdf8" d="M25 29c0-20 46-20 46 0v53H25Z"/><path fill="#0ea5e9" d="M32 53h32v23H32Z"/><path d="M36 30v-7c0-14 24-14 24 0v7m-35 8h46"/>',
+  pot: '<path fill="#cbd5e1" d="M20 35h56l-5 43H25Z"/><path d="M14 36h68M39 27h18m-9-8v8m-24 5v-8h48v8m-29 25h18"/>',
+  toothbrush: '<path fill="#2dd4bf" d="M39 19h18v63H39Z"/><path d="M35 18h26M38 9v10m7-10v10m7-10v10m7-10v10"/>',
+  comb: '<rect x="14" y="31" width="68" height="18" rx="4" fill="#f9a8d4"/><path d="M22 49v19m10-19v19m10-19v19m10-19v19m10-19v19m10-19v19m10-19v19"/>',
+  shirt: '<path fill="#93c5fd" d="m30 18 18 10 18-10 22 14-12 18-10-7v45H30V43l-10 7L8 32Z"/><path d="M38 23c0 13 20 13 20 0"/>',
+  car: '<path fill="#ef4444" d="M15 56h66v22H15Z"/><path fill="#60a5fa" d="m25 55 10-22h28l16 22Z"/><circle cx="30" cy="78" r="9" fill="#1f2937"/><circle cx="68" cy="78" r="9" fill="#1f2937"/><path d="M39 37v17m19-17v17"/>',
+  bus: '<rect x="16" y="18" width="64" height="60" rx="10" fill="#facc15"/><path fill="#bae6fd" d="M24 27h21v21H24Zm27 0h21v21H51Z"/><circle cx="30" cy="78" r="8" fill="#1f2937"/><circle cx="67" cy="78" r="8" fill="#1f2937"/><path d="M22 59h52"/>',
+  bicycle: '<circle cx="23" cy="69" r="17" fill="none"/><circle cx="73" cy="69" r="17" fill="none"/><path d="m23 69 18-30 17 30H23l16-25h20l14 25M33 39h15m16 0h8"/>',
+  airplane: '<path fill="#e2e8f0" d="m8 51 30-8 10-31 8 1 1 29 25-7 7 5-31 19-1 24-7 4-10-20-27-8Z"/><path d="m8 51 30-8 10-31 8 1 1 29 25-7 7 5-31 19-1 24-7 4-10-20-27-8Z"/>',
+  boat: '<path fill="#38bdf8" d="M14 61h68L67 81H30Z"/><path fill="#f8fafc" d="M47 17h4v43H28Z"/><path fill="#facc15" d="M54 23v37h24Z"/><path d="M12 84c12-8 23 8 36 0s23 8 36 0"/>',
+  hand: '<path fill="#f4c7a1" d="M31 47V20c0-10 13-10 13 0v19-30c0-10 13-10 13 0v30-26c0-10 13-10 13 0v31-17c0-10 13-10 13 0v29c0 22-16 33-35 33-17 0-28-12-28-29L16 47c0-10 14-10 15 0Z"/>',
+  clockBell: '<path fill="#facc15" d="M48 14c-17 0-25 13-25 30v22L15 76h66l-8-10V44c0-17-8-30-25-30Z"/><circle cx="48" cy="82" r="7" fill="#f97316"/><path d="M39 14c0-12 18-12 18 0M48 29v19l13 8"/>',
+  key: '<circle cx="33" cy="42" r="21" fill="#facc15"/><circle cx="33" cy="42" r="8" fill="#fff"/><path fill="#facc15" d="M52 37h35v11H74v12H62V48H52Z"/>',
+  spoon: '<ellipse cx="33" cy="26" rx="16" ry="21" fill="#cbd5e1"/><path fill="#cbd5e1" d="M29 43h9v47h-9Z"/>',
+  bottle: '<path fill="#86efac" d="M39 17h18v15l10 10v45H29V42l10-10Z"/><path d="M39 17h18m-18 8h18m-18 18h28m-41 31h44"/>',
+  triangle: '<path fill="#fef08a" d="m48 12 40 72H8Z"/><path d="m48 12 40 72H8Z"/>',
+  square: '<rect x="16" y="16" width="64" height="64" rx="2" fill="#bfdbfe"/>',
+  circle: '<circle cx="48" cy="48" r="34" fill="#fecdd3"/>',
+  star: '<path fill="#facc15" d="m48 8 10 27 29 1-23 18 8 29-24-17-24 17 8-29L9 36l29-1Z"/>',
+  rectangle: '<rect x="10" y="27" width="76" height="42" rx="2" fill="#bbf7d0"/>',
+  heart: '<path fill="#fb7185" d="M48 82 14 49C-2 28 23 8 40 26l8 9 8-9c17-18 42 2 26 23Z"/>',
+  letterP: '<path fill="none" d="M28 86V12h30c31 0 31 43 0 43H28"/>',
+  letterA: '<path fill="none" d="m15 86 33-74 33 74M28 58h40"/>',
+  numberFive: '<path fill="none" d="M72 14H29v30c27-17 52-1 45 23-6 22-35 25-53 8"/>'
+};
+const ILLUSTRATION_LIBRARY = [
+  ['apple','Apple','Fruits & Food'],['banana','Banana','Fruits & Food'],['orange','Orange','Fruits & Food'],
+  ['grapes','Grapes','Fruits & Food'],['pineapple','Pineapple','Fruits & Food'],['watermelon','Watermelon','Fruits & Food'],
+  ['mango','Mango','Fruits & Food'],['pear','Pear','Fruits & Food'],['strawberry','Strawberry','Fruits & Food'],
+  ['carrot','Carrot','Fruits & Food'],['tomato','Tomato','Fruits & Food'],
+  ['cat','Cat','Animals'],['dog','Dog','Animals'],['fish','Fish','Animals'],['bird','Bird','Animals'],
+  ['rabbit','Rabbit','Animals'],['goat','Goat','Animals'],['cow','Cow','Animals'],['chicken','Chicken','Animals'],
+  ['elephant','Elephant','Animals'],['lion','Lion','Animals'],['butterfly','Butterfly','Animals'],
+  ['boy','Boy','People'],['girl','Girl','People'],['teacher','Teacher','People'],['hand','Hand','People'],
+  ['pencil','Pencil','School'],['book','Book','School'],['ruler','Ruler','School'],['pencilCase','Pencil case','School'],
+  ['scissors','Scissors','School'],['backpack','School bag','School'],['letterP','Letter P','School'],
+  ['letterA','Letter A','School'],['numberFive','Number 5','School'],
+  ['clock','Clock','Home & Objects'],['cup','Cup','Home & Objects'],['chair','Chair','Home & Objects'],
+  ['pot','Cooking pot','Home & Objects'],['toothbrush','Toothbrush','Home & Objects'],['comb','Comb','Home & Objects'],
+  ['shirt','Shirt','Home & Objects'],['spoon','Spoon','Home & Objects'],['bottle','Bottle','Home & Objects'],
+  ['key','Key','Home & Objects'],['clockBell','Bell','Home & Objects'],['house','House','Home & Objects'],
+  ['car','Car','Transport'],['bus','Bus','Transport'],['bicycle','Bicycle','Transport'],
+  ['airplane','Airplane','Transport'],['boat','Boat','Transport'],
+  ['tree','Tree','Nature'],['sun','Sun','Nature'],['cloud','Cloud','Nature'],['umbrella','Umbrella','Nature'],
+  ['flower','Flower','Nature'],
+  ['triangle','Triangle','Shapes'],['square','Square','Shapes'],['circle','Circle','Shapes'],
+  ['star','Star','Shapes'],['rectangle','Rectangle','Shapes'],['heart','Heart','Shapes']
+].map(([id, label, category]) => ({ id, label, category, svg: ILLUSTRATION_ART[id] }));
+let activeIllustrationCategory = 'All';
+let illustrationInsertPosition = null;
+const illustrationImageCache = new Map();
 
 function getExamHeaderDetails(details = appState.details) {
   return {
@@ -1686,6 +2045,186 @@ function goToStep(n) {
   });
 
   window.scrollTo({ top: 0, behavior: 'smooth' });
+  scheduleDraftSave();
+}
+
+function setDraftStatus(message, state, title = '') {
+  const status = document.getElementById('draftStatus');
+  const text = document.getElementById('draftStatusText');
+  if (!status || !text) return;
+  status.dataset.state = state;
+  status.title = title || message;
+  text.textContent = message;
+}
+
+function reportDraftStorageError(operation, error) {
+  if (!draftStorageWarningLogged) {
+    console.warn(`[draft] Unable to ${operation} local draft:`, error);
+    draftStorageWarningLogged = true;
+  }
+  setDraftStatus('Local saving unavailable', 'error', 'Browser storage is unavailable. Your current work will not be saved on this device.');
+}
+
+function getDraftSnapshot() {
+  const subjectSelection = document.getElementById('examSubject').value;
+  return {
+    version: DRAFT_VERSION,
+    currentStep: appState.currentStep,
+    details: {
+      term: document.getElementById('examTerm').value,
+      session: document.getElementById('examSession').value,
+      subjectSelection,
+      subject: getSubject(),
+      customSubject: document.getElementById('customSubject').value,
+      cls: document.getElementById('examClass').value,
+      duration: document.getElementById('examDuration').value
+    },
+    manualTranscriptionText: document.getElementById('manualTranscriptionText').value,
+    editorText: document.getElementById('examEditor').value,
+    editorVisible: document.getElementById('editorLayout').style.display !== 'none'
+  };
+}
+
+function isValidDraft(draft) {
+  if (!draft || typeof draft !== 'object' || draft.version !== DRAFT_VERSION) return false;
+  if (!Number.isInteger(draft.currentStep) || draft.currentStep < 1 || draft.currentStep > 4) return false;
+  if (!draft.details || typeof draft.details !== 'object') return false;
+  const detailFields = ['term', 'session', 'subjectSelection', 'subject', 'customSubject', 'cls', 'duration'];
+  if (!detailFields.every(field => typeof draft.details[field] === 'string')) return false;
+  return typeof draft.manualTranscriptionText === 'string' &&
+    typeof draft.editorText === 'string' &&
+    typeof draft.editorVisible === 'boolean';
+}
+
+function scheduleDraftSave() {
+  if (isRestoringDraft) return;
+  setDraftStatus('Saving...', 'saving', 'Saving your draft in this browser on this device.');
+  clearTimeout(draftSaveTimer);
+  draftSaveTimer = setTimeout(saveDraft, DRAFT_SAVE_DELAY);
+}
+
+function saveDraft() {
+  clearTimeout(draftSaveTimer);
+  draftSaveTimer = null;
+  try {
+    localStorage.setItem(DRAFT_STORAGE_KEY, JSON.stringify(getDraftSnapshot()));
+    hasStoredDraft = true;
+    draftStorageWarningLogged = false;
+    setDraftStatus('Saved locally', 'saved', 'Your draft is stored only in this browser on this device.');
+  } catch (error) {
+    reportDraftStorageError('save', error);
+  }
+}
+
+function restoreDraft() {
+  let serialized;
+  try {
+    serialized = localStorage.getItem(DRAFT_STORAGE_KEY);
+  } catch (error) {
+    reportDraftStorageError('read', error);
+    return false;
+  }
+
+  if (!serialized) {
+    hasStoredDraft = false;
+    setDraftStatus('No saved draft', 'idle', 'Drafts are saved only in this browser on this device.');
+    return false;
+  }
+  hasStoredDraft = true;
+
+  let draft;
+  try {
+    draft = JSON.parse(serialized);
+  } catch (error) {
+    console.warn('[draft] Saved draft contains invalid JSON:', error);
+    setDraftStatus('Draft could not be restored', 'error', 'The saved draft is damaged. Starting a new document will replace it.');
+    return false;
+  }
+
+  if (!isValidDraft(draft)) {
+    console.warn('[draft] Saved draft has an unsupported or invalid format.');
+    setDraftStatus('Draft could not be restored', 'error', 'The saved draft format is invalid. Starting a new document will replace it.');
+    return false;
+  }
+
+  isRestoringDraft = true;
+  const details = draft.details;
+  restoreSelectValue('examTerm', details.term);
+  restoreSelectValue('examSession', details.session);
+  restoreSelectValue('examSubject', details.subjectSelection);
+  document.getElementById('customSubject').value = details.customSubject;
+  document.getElementById('customSubjectGroup').style.display =
+    document.getElementById('examSubject').value === 'CUSTOM' ? 'flex' : 'none';
+  restoreSelectValue('examClass', details.cls);
+  restoreSelectValue('examDuration', details.duration);
+
+  appState.details = {
+    term: document.getElementById('examTerm').value,
+    session: document.getElementById('examSession').value,
+    subject: getSubject(),
+    cls: document.getElementById('examClass').value,
+    duration: document.getElementById('examDuration').value
+  };
+  appState.extractedText = draft.editorText;
+  document.getElementById('manualTranscriptionText').value = draft.manualTranscriptionText;
+  document.getElementById('examEditor').value = draft.editorText;
+  document.getElementById('editorLayout').style.display = draft.editorVisible ? 'grid' : 'none';
+  document.getElementById('manualTranscriptionPrompt').value =
+    details.term ? buildManualTranscriptionPrompt() : '';
+  updateHeaderDisplay();
+
+  const detailsComplete = Boolean(details.term && details.session && details.subject &&
+    details.cls && details.duration);
+  let restoredStep = draft.currentStep;
+  if (!detailsComplete) restoredStep = 1;
+  else if (restoredStep === 4 && !draft.editorText.trim()) restoredStep = 3;
+  if (restoredStep === 4) {
+    const header = getExamHeaderDetails(appState.details);
+    document.getElementById('pvTermSession').textContent = header.termSession;
+    document.getElementById('pvSubject').textContent = header.subject;
+    document.getElementById('pvClass').textContent = header.examClass;
+    document.getElementById('pvDuration').textContent = header.duration;
+    renderPreviewBody(draft.editorText.trim());
+  }
+  goToStep(restoredStep);
+  isRestoringDraft = false;
+  hasStoredDraft = true;
+  setDraftStatus('Saved locally', 'saved', 'Your draft is stored only in this browser on this device.');
+  return true;
+}
+
+function restoreSelectValue(id, value) {
+  const select = document.getElementById(id);
+  select.value = Array.from(select.options).some(option => option.value === value) ? value : '';
+}
+
+function handleDraftFieldChange(event) {
+  if (event.target && DRAFT_FIELD_IDS.has(event.target.id)) scheduleDraftSave();
+}
+
+function hasDraftContent() {
+  return Boolean(
+    document.getElementById('examTerm').value ||
+    document.getElementById('examSubject').value ||
+    document.getElementById('customSubject').value.trim() ||
+    document.getElementById('examClass').value ||
+    document.getElementById('examDuration').value ||
+    document.getElementById('manualTranscriptionText').value.trim() ||
+    document.getElementById('examEditor').value.trim()
+  );
+}
+
+function discardLocalDraft() {
+  clearTimeout(draftSaveTimer);
+  draftSaveTimer = null;
+  try {
+    localStorage.removeItem(DRAFT_STORAGE_KEY);
+    hasStoredDraft = false;
+    draftStorageWarningLogged = false;
+    setDraftStatus('No saved draft', 'idle', 'Drafts are saved only in this browser on this device.');
+  } catch (error) {
+    reportDraftStorageError('remove', error);
+  }
 }
 
 /* ================================================================
@@ -1728,7 +2267,141 @@ function handleSubjectChange(sel) {
    ================================================================ */
 function buildManualTranscriptionPrompt() {
   const { term, session, subject, cls } = appState.details;
-  return `Transcribe all readable text from the attached exam page images in page order. This is the ${term} examination for ${cls}, ${subject}, ${session} academic session. Preserve the original wording, numbering, section headings, answer choices, symbols, and line breaks as closely as possible. For any pencil-drawn circle around a letter, answer choice, or word, represent the circled content using the exact ASCII format [CIRCLED:content], for example [CIRCLED:A]. Do not use Unicode circled-letter or circle symbols. Do not answer, solve, summarize, or invent content. Mark unreadable words as [unclear]. Return only the transcription.`;
+  const illustrationIds = ILLUSTRATION_LIBRARY.map(item => item.id).join(', ');
+  return `Transcribe all readable text from the attached exam page images in page order. This is the ${term} examination for ${cls}, ${subject}, ${session} academic session. Preserve the original wording, numbering, section headings, answer choices, symbols, and line breaks as closely as possible. When a sketch or simple drawing appears within a question, describe its position using an inline marker in this exact format: [ILLUSTRATION:object-id]. Use the closest matching id from this built-in DocuScan illustration library: ${illustrationIds}. Put the marker where the drawing belongs in the question. If no library item matches, use a short lowercase hyphenated description as the id (for example [ILLUSTRATION:watering-can]); do not omit the sketch or pretend its text is readable. For any pencil-drawn circle around a letter, answer choice, or word, represent the circled content using the exact ASCII format [CIRCLED:content], for example [CIRCLED:A]. Do not use Unicode circled-letter or circle symbols. Do not answer, solve, summarize, or invent content. Mark unreadable words as [unclear]. Return only the transcription.`;
+}
+
+function buildIllustrationSvg(item) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96"><g fill="none" stroke="#25324b" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round">${item.svg}</g></svg>`;
+}
+
+function illustrationDataUrl(item) {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(buildIllustrationSvg(item))}`;
+}
+
+function openIllustrationLibrary() {
+  const editor = document.getElementById('examEditor');
+  if (document.getElementById('editorLayout').style.display === 'none') {
+    return showToast('Load a transcription into the editor before adding an illustration.', 'error');
+  }
+
+  illustrationInsertPosition = {
+    start: editor.selectionStart,
+    end: editor.selectionEnd
+  };
+  activeIllustrationCategory = 'All';
+  document.getElementById('illustrationSearch').value = '';
+  renderIllustrationCategories();
+  renderIllustrationLibrary();
+  document.getElementById('illustrationDialog').showModal();
+}
+
+function closeIllustrationLibrary() {
+  const dialog = document.getElementById('illustrationDialog');
+  if (dialog.open) dialog.close();
+}
+
+function renderIllustrationCategories() {
+  const container = document.getElementById('illustrationCategories');
+  container.replaceChildren();
+  ILLUSTRATION_CATEGORIES.forEach(category => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'illustration-category';
+    button.textContent = category;
+    button.setAttribute('aria-pressed', String(category === activeIllustrationCategory));
+    button.addEventListener('click', () => {
+      activeIllustrationCategory = category;
+      renderIllustrationCategories();
+      renderIllustrationLibrary();
+    });
+    container.appendChild(button);
+  });
+}
+
+function renderIllustrationLibrary() {
+  const grid = document.getElementById('illustrationGrid');
+  const query = document.getElementById('illustrationSearch').value.trim().toLowerCase();
+  const matches = ILLUSTRATION_LIBRARY.filter(item => {
+    const matchesCategory = activeIllustrationCategory === 'All' || item.category === activeIllustrationCategory;
+    const matchesQuery = !query || `${item.id} ${item.label} ${item.category}`.toLowerCase().includes(query);
+    return matchesCategory && matchesQuery;
+  });
+
+  grid.replaceChildren();
+  if (!matches.length) {
+    const empty = document.createElement('p');
+    empty.className = 'illustration-empty';
+    empty.textContent = 'No matching illustrations. Try another search or category.';
+    grid.appendChild(empty);
+    return;
+  }
+
+  matches.forEach(item => {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'illustration-item';
+    button.setAttribute('aria-label', `Insert ${item.label}`);
+    const image = document.createElement('img');
+    image.src = illustrationDataUrl(item);
+    image.alt = '';
+    const label = document.createElement('span');
+    label.textContent = item.label;
+    button.append(image, label);
+    button.addEventListener('click', () => insertIllustration(item));
+    grid.appendChild(button);
+  });
+}
+
+function insertIllustration(item) {
+  const editor = document.getElementById('examEditor');
+  const start = illustrationInsertPosition?.start ?? editor.selectionStart;
+  const end = illustrationInsertPosition?.end ?? editor.selectionEnd;
+  const before = editor.value.slice(0, start);
+  const after = editor.value.slice(end);
+  const prefix = before && !/\s$/.test(before) ? ' ' : '';
+  const suffix = after && !/^\s/.test(after) ? ' ' : '';
+  const marker = `[ILLUSTRATION:${item.id}]`;
+  const insertedText = `${prefix}${marker}${suffix}`;
+
+  editor.value = `${before}${insertedText}${after}`;
+  const caret = before.length + insertedText.length;
+  editor.focus();
+  editor.setSelectionRange(caret, caret);
+  illustrationInsertPosition = null;
+  scheduleDraftSave();
+  closeIllustrationLibrary();
+  showToast(`${item.label} added to the exam.`, 'success');
+}
+
+function renderPreviewBody(text) {
+  const preview = document.getElementById('pvBody');
+  const markerPattern = /\[ILLUSTRATION:([a-z0-9_-]+)\]/gi;
+  const fragment = document.createDocumentFragment();
+  let lastIndex = 0;
+  let match;
+
+  while ((match = markerPattern.exec(text)) !== null) {
+    fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
+    const item = ILLUSTRATION_LIBRARY.find(entry => entry.id === match[1].toLowerCase());
+    if (item) {
+      const image = document.createElement('img');
+      image.className = 'preview-illustration';
+      image.src = illustrationDataUrl(item);
+      image.alt = item.label;
+      image.title = item.label;
+      fragment.appendChild(image);
+    } else {
+      const placeholder = document.createElement('span');
+      placeholder.className = 'preview-illustration-missing';
+      placeholder.textContent = `[Sketch: ${match[1].replace(/[-_]+/g, ' ')}]`;
+      fragment.appendChild(placeholder);
+    }
+    lastIndex = markerPattern.lastIndex;
+  }
+
+  fragment.appendChild(document.createTextNode(text.slice(lastIndex)));
+  preview.replaceChildren(fragment);
 }
 
 async function copyManualTranscriptionPrompt() {
@@ -1757,6 +2430,7 @@ function renderEditor(text, successMessage = 'Text extracted successfully!') {
   document.getElementById('editorLayout').style.display = 'grid';
   document.getElementById('examEditor').value = text || '';
   updateHeaderDisplay();
+  scheduleDraftSave();
   if (successMessage) showToast(successMessage, 'success');
 }
 
@@ -1786,12 +2460,14 @@ function aiCleanup() {
   text = removeExtraSpacesLogic(text);
 
   editor.value = text;
+  scheduleDraftSave();
   showToast('✨ AI Cleanup complete! Numbering, spacing, and punctuation fixed.', 'success');
 }
 
 function fixNumbering() {
   const editor = document.getElementById('examEditor');
   editor.value = fixNumberingLogic(editor.value);
+  scheduleDraftSave();
   showToast('Question numbering fixed.', 'success');
 }
 
@@ -1820,6 +2496,7 @@ function fixPunctuation(text) {
 function removeExtraSpaces() {
   document.getElementById('examEditor').value =
     removeExtraSpacesLogic(document.getElementById('examEditor').value);
+  scheduleDraftSave();
   showToast('Extra spaces removed.', 'success');
 }
 
@@ -1842,11 +2519,13 @@ function addQuestion() {
   editor.value += `\n${maxNum + 1}. `;
   editor.focus();
   editor.selectionStart = editor.selectionEnd = editor.value.length;
+  scheduleDraftSave();
 }
 
 function clearEditor() {
   if (confirm('Clear all extracted text? This cannot be undone.')) {
     document.getElementById('examEditor').value = '';
+    scheduleDraftSave();
   }
 }
 
@@ -1864,7 +2543,7 @@ function goToPreview() {
   document.getElementById('pvSubject').textContent = header.subject;
   document.getElementById('pvClass').textContent = header.examClass;
   document.getElementById('pvDuration').textContent = header.duration;
-  document.getElementById('pvBody').textContent     = text;
+  renderPreviewBody(text);
 
   goToStep(4);
 }
@@ -1876,34 +2555,39 @@ function printPaper() {
   window.print();
 }
 
-function downloadPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const paperCanvas = renderPaperToCanvas();
-  const pageWidthMm = 210;
-  const pageHeightMm = 297;
-  const pageHeightPx = Math.round(paperCanvas.width * pageHeightMm / pageWidthMm);
+async function downloadPDF() {
+  try {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const paperCanvas = await renderPaperToCanvas();
+    const pageWidthMm = 210;
+    const pageHeightMm = 297;
+    const pageHeightPx = Math.round(paperCanvas.width * pageHeightMm / pageWidthMm);
 
-  for (let pageTop = 0; pageTop < paperCanvas.height; pageTop += pageHeightPx) {
-    const pageCanvas = document.createElement('canvas');
-    pageCanvas.width = paperCanvas.width;
-    pageCanvas.height = pageHeightPx;
+    for (let pageTop = 0; pageTop < paperCanvas.height; pageTop += pageHeightPx) {
+      const pageCanvas = document.createElement('canvas');
+      pageCanvas.width = paperCanvas.width;
+      pageCanvas.height = pageHeightPx;
 
-    const pageContext = pageCanvas.getContext('2d');
-    pageContext.fillStyle = '#FFFFFF';
-    pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
-    pageContext.drawImage(
-      paperCanvas,
-      0, pageTop, paperCanvas.width, Math.min(pageHeightPx, paperCanvas.height - pageTop),
-      0, 0, paperCanvas.width, Math.min(pageHeightPx, paperCanvas.height - pageTop)
-    );
+      const pageContext = pageCanvas.getContext('2d');
+      pageContext.fillStyle = '#FFFFFF';
+      pageContext.fillRect(0, 0, pageCanvas.width, pageCanvas.height);
+      pageContext.drawImage(
+        paperCanvas,
+        0, pageTop, paperCanvas.width, Math.min(pageHeightPx, paperCanvas.height - pageTop),
+        0, 0, paperCanvas.width, Math.min(pageHeightPx, paperCanvas.height - pageTop)
+      );
 
-    doc.addImage(pageCanvas, 'PNG', 0, 0, pageWidthMm, pageHeightMm);
-    if (pageTop + pageHeightPx < paperCanvas.height) doc.addPage();
+      doc.addImage(pageCanvas, 'PNG', 0, 0, pageWidthMm, pageHeightMm);
+      if (pageTop + pageHeightPx < paperCanvas.height) doc.addPage();
+    }
+
+    doc.save(buildPaperFilename('pdf'));
+    showToast('PDF downloaded successfully!', 'success');
+  } catch (error) {
+    console.error('[export] Unable to create PDF:', error);
+    showToast('Unable to create the PDF. Please try again.', 'error');
   }
-
-  doc.save(buildPaperFilename('pdf'));
-  showToast('PDF downloaded successfully!', 'success');
 }
 
 function copyText() {
@@ -2055,8 +2739,8 @@ async function copyImageToClipboard(blob) {
   }
 }
 
-function createPaperImageBlob() {
-  const canvas = renderPaperToCanvas();
+async function createPaperImageBlob() {
+  const canvas = await renderPaperToCanvas();
   return new Promise((resolve, reject) => {
     canvas.toBlob(blob => {
       if (blob) resolve(blob);
@@ -2065,7 +2749,22 @@ function createPaperImageBlob() {
   });
 }
 
-function renderPaperToCanvas() {
+function loadIllustrationImage(id) {
+  if (illustrationImageCache.has(id)) return illustrationImageCache.get(id);
+  const item = ILLUSTRATION_LIBRARY.find(entry => entry.id === id);
+  if (!item) return Promise.resolve(null);
+
+  const imagePromise = new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () => resolve(image);
+    image.onerror = () => reject(new Error(`Unable to load illustration "${item.label}"`));
+    image.src = illustrationDataUrl(item);
+  });
+  illustrationImageCache.set(id, imagePromise);
+  return imagePromise;
+}
+
+async function renderPaperToCanvas() {
   const d = appState.details;
   const bodyText = document.getElementById('examEditor').value.trim();
   const width = 1240;
@@ -2078,8 +2777,13 @@ function renderPaperToCanvas() {
 
   tempCtx.font = '24px "Times New Roman", serif';
   const bodyLines = wrapCanvasText(tempCtx, bodyText, maxTextWidth);
+  const illustrationIds = [...bodyText.matchAll(/\[ILLUSTRATION:([a-z0-9_-]+)\]/gi)]
+    .map(match => match[1].toLowerCase());
+  const loadedIllustrations = new Map(await Promise.all(
+    [...new Set(illustrationIds)].map(async id => [id, await loadIllustrationImage(id)])
+  ));
   const bodyHeight = bodyLines.reduce((height, line) => {
-    return height + (line === '' ? paragraphGap : bodyLineHeight);
+    return height + (line === '' ? paragraphGap : canvasLineHeight(line, bodyLineHeight));
   }, 0);
 
   const height = Math.max(1754, 330 + bodyHeight + 120);
@@ -2128,42 +2832,80 @@ function renderPaperToCanvas() {
       y += paragraphGap;
       return;
     }
-    drawTranscribedLine(ctx, line, margin, y);
-    y += bodyLineHeight;
+    drawTranscribedLine(ctx, line, margin, y, loadedIllustrations);
+    y += canvasLineHeight(line, bodyLineHeight);
   });
 
   return canvas;
 }
 
-function drawTranscribedLine(ctx, line, x, y) {
-  const markerPattern = /\[CIRCLED:([^\]]+)\]/g;
+function canvasLineHeight(line, defaultHeight) {
+  return /\[ILLUSTRATION:[a-z0-9_-]+\]/i.test(line) ? 78 : defaultHeight;
+}
+
+function measureCanvasLine(ctx, line) {
+  const markerPattern = /\[ILLUSTRATION:([a-z0-9_-]+)\]|\[CIRCLED:([^\]]+)\]/gi;
+  let width = 0;
+  let lastIndex = 0;
+  let match;
+  while ((match = markerPattern.exec(line)) !== null) {
+    width += ctx.measureText(line.slice(lastIndex, match.index)).width;
+    if (match[1]) {
+      width += ILLUSTRATION_LIBRARY.some(item => item.id === match[1].toLowerCase())
+        ? 78
+        : ctx.measureText(`[Sketch: ${match[1].replace(/[-_]+/g, ' ')}]`).width;
+    } else {
+      width += ctx.measureText(match[2].trim()).width;
+    }
+    lastIndex = markerPattern.lastIndex;
+  }
+  return width + ctx.measureText(line.slice(lastIndex)).width;
+}
+
+function drawTranscribedLine(ctx, line, x, y, illustrations = new Map()) {
+  const markerPattern = /\[ILLUSTRATION:([a-z0-9_-]+)\]|\[CIRCLED:([^\]]+)\]/gi;
   const fontSize = parseFloat(ctx.font) || 24;
   let cursorX = x;
   let lastIndex = 0;
   let match;
+  const hasIllustration = /\[ILLUSTRATION:[a-z0-9_-]+\]/i.test(line);
+  const textY = y + (hasIllustration ? 24 : 0);
 
   while ((match = markerPattern.exec(line)) !== null) {
     const precedingText = line.slice(lastIndex, match.index);
-    ctx.fillText(precedingText, cursorX, y);
+    ctx.fillText(precedingText, cursorX, textY);
     cursorX += ctx.measureText(precedingText).width;
 
-    const circledText = match[1].trim();
-    if (circledText) {
-      const textWidth = ctx.measureText(circledText).width;
-      ctx.fillText(circledText, cursorX, y);
-      ctx.beginPath();
-      ctx.ellipse(cursorX + textWidth / 2, y + fontSize * 0.55, textWidth / 2 + 6, fontSize * 0.7, 0, 0, Math.PI * 2);
-      ctx.strokeStyle = '#333333';
-      ctx.lineWidth = 2;
-      ctx.stroke();
-      cursorX += textWidth;
+    if (match[1]) {
+      const itemId = match[1].toLowerCase();
+      const image = illustrations.get(itemId);
+      if (image) {
+        ctx.drawImage(image, cursorX, y + 3, 72, 68);
+        cursorX += 78;
+      } else {
+        const fallback = `[Sketch: ${itemId.replace(/[-_]+/g, ' ')}]`;
+        ctx.fillText(fallback, cursorX, textY);
+        cursorX += ctx.measureText(fallback).width;
+      }
+    } else {
+      const circledText = match[2].trim();
+      if (circledText) {
+        const textWidth = ctx.measureText(circledText).width;
+        ctx.fillText(circledText, cursorX, textY);
+        ctx.beginPath();
+        ctx.ellipse(cursorX + textWidth / 2, textY + fontSize * 0.55, textWidth / 2 + 6, fontSize * 0.7, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = '#333333';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        cursorX += textWidth;
+      }
     }
 
     lastIndex = markerPattern.lastIndex;
   }
 
   const remainingText = line.slice(lastIndex);
-  ctx.fillText(remainingText, cursorX, y);
+  ctx.fillText(remainingText, cursorX, textY);
 }
 
 function wrapCanvasText(ctx, text, maxWidth) {
@@ -2171,7 +2913,7 @@ function wrapCanvasText(ctx, text, maxWidth) {
   const paragraphs = text.replace(/\r\n/g, '\n').split('\n');
 
   paragraphs.forEach(paragraph => {
-    const words = paragraph.match(/\[CIRCLED:[^\]]+\]|\S+/g) || [];
+    const words = paragraph.match(/\[ILLUSTRATION:[a-z0-9_-]+\]|\[CIRCLED:[^\]]+\]|\S+/gi) || [];
     if (!words.length) {
       lines.push('');
       return;
@@ -2180,7 +2922,7 @@ function wrapCanvasText(ctx, text, maxWidth) {
     let line = '';
     words.forEach(word => {
       const candidate = line ? `${line} ${word}` : word;
-      if (ctx.measureText(candidate).width <= maxWidth) {
+      if (measureCanvasLine(ctx, candidate) <= maxWidth) {
         line = candidate;
       } else {
         if (line) lines.push(line);
@@ -2210,12 +2952,28 @@ function copyExtractedText() {
    START NEW
    ================================================================ */
 function startNew() {
-  if (!confirm('Start a new examination? Current work will be lost.')) return;
+  if ((hasStoredDraft || hasDraftContent()) &&
+      !confirm('Start a new document? This will permanently discard the saved draft on this device.')) return;
+
+  isRestoringDraft = true;
   appState = { currentStep: 1, extractedText: '', details: {} };
+  document.getElementById('examTerm').value = '';
+  document.getElementById('examSubject').value = '';
+  document.getElementById('customSubject').value = '';
+  document.getElementById('customSubjectGroup').style.display = 'none';
+  document.getElementById('examClass').value = '';
+  document.getElementById('examDuration').value = '';
+  setDefaultSession();
   document.getElementById('examEditor').value = '';
+  document.getElementById('editorLayout').style.display = 'none';
   document.getElementById('manualTranscriptionPrompt').value = '';
   document.getElementById('manualTranscriptionText').value = '';
+  ['pvTermSession', 'pvSubject', 'pvClass', 'pvDuration', 'pvBody'].forEach(id => {
+    document.getElementById(id).textContent = '';
+  });
   goToStep(1);
+  isRestoringDraft = false;
+  discardLocalDraft();
 }
 
 /* ================================================================
@@ -2233,15 +2991,27 @@ function showToast(msg, type = 'info') {
    INIT
    ================================================================ */
 // Set current session default (academic year starting this calendar year)
-(function setDefaultSession() {
+function setDefaultSession() {
   const year = new Date().getFullYear();
   const session = `${year}/${year + 1}`;
   const sel = document.getElementById('examSession');
-  for (let opt of sel.options) {
-    if (opt.value === session) { opt.selected = true; return; }
-  }
-})();
+  const matchingOption = Array.from(sel.options).find(option => option.value === session);
+  const defaultOption = Array.from(sel.options).find(option => option.defaultSelected);
+  if (matchingOption) sel.value = matchingOption.value;
+  else if (defaultOption) sel.value = defaultOption.value;
+}
 
+setDefaultSession();
+
+restoreDraft();
+document.addEventListener('input', handleDraftFieldChange);
+document.addEventListener('change', handleDraftFieldChange);
+window.addEventListener('pagehide', () => {
+  if (draftSaveTimer) saveDraft();
+});
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden' && draftSaveTimer) saveDraft();
+});
 document.addEventListener('click', closeShareMenu);
 </script>
 </body>
