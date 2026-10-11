@@ -164,7 +164,8 @@ Only configure `GEMINI_API_KEY` in Netlify if you separately use the OCR endpoin
 - Copy Gemini's response
 - Paste Gemini's response into DocuScan and select **Continue to Exam Editor**
 - Review and correct the questions
-- Use toolbar for quick fixes
+- Use **Fix Numbers** if main questions need a continuous 1, 2, 3 sequence; it leaves lettered/Roman subparts and answer choices unchanged
+- The Gemini prompt asks it to copy visible question numbers once and keep page sequences intact
 - Choose **Pictures / Trace Letters** to browse the picture library, insert a dotted uppercase/lowercase tracing letter, or add a boxed Aa worksheet. Choose standard, large, or extra-large letter sizing; boxed worksheets repeat the selected pair in a 2-row by 4-column grid. Gemini's prompt uses `[TRACE:A]` or `[TRACE:a]` markers for dotted letters and picture IDs for other sketches.
 - Add/remove questions as needed
 

@@ -1801,7 +1801,7 @@ select:focus, input[type="text"]:focus, textarea:focus {
           <li>Tap <strong>Open Gemini</strong> and keep this DocuScan tab open.</li>
           <li>In Gemini, tap the <strong>+</strong> or attachment button. Take photos or choose them from your phone's gallery. Attach up to 10 images in one message.</li>
           <li>Copy the prompt below, paste it into Gemini, and send it with your images.</li>
-          <li>Copy Gemini's transcription, return to this tab, and paste it into the response box.</li>
+          <li>Copy Gemini's transcription, return to this tab, and paste it into the response box. If main question numbers need a continuous sequence, use <strong>Fix Numbers</strong> in the editor; subparts and answer choices are left alone.</li>
         </ol>
         <p>Have more than 10 pages? Send them in batches of up to 10. Ask Gemini to continue the transcription in page order, then combine the responses before pasting them here. For a pencil circle around text, Gemini should write it as <code>[CIRCLED:A]</code>; the downloaded PDF will draw a circle around A.</p>
         <div class="manual-ai-actions">
@@ -1842,8 +1842,8 @@ select:focus, input[type="text"]:focus, textarea:focus {
             <span class="badge">Editable</span>
           </div>
           <div class="editor-toolbar">
-            <button class="tool-btn" onclick="aiCleanup()" title="Auto-fix spacing, numbering, punctuation">✨ AI Cleanup</button>
-            <button class="tool-btn" onclick="fixNumbering()" title="Fix question numbering">🔢 Fix Numbers</button>
+            <button class="tool-btn" onclick="aiCleanup()" title="Auto-fix top-level question numbering, spacing, and punctuation">✨ AI Cleanup</button>
+            <button class="tool-btn" onclick="fixNumbering()" title="Renumber top-level questions in order; leave subparts and answer choices unchanged">🔢 Fix Numbers</button>
             <button class="tool-btn" onclick="removeExtraSpaces()" title="Remove extra spaces">🧹 Clean Spaces</button>
             <button class="tool-btn" onclick="addQuestion()" title="Add a new question line">＋ Add Question</button>
             <button class="tool-btn" onclick="openIllustrationLibrary()" title="Insert a picture or dotted tracing letter at the cursor">🖼 Pictures / Trace Letters</button>
@@ -2380,7 +2380,7 @@ function buildManualTranscriptionPrompt() {
     .filter(item => !item.traceLetter && !['letterA', 'letterP'].includes(item.id))
     .map(item => item.id)
     .join(', ');
-  return `Transcribe all readable text from the attached exam page images in page order. This is the ${term} examination for ${cls}, ${subject}, ${session} academic session. Preserve the original wording, numbering, section headings, answer choices, symbols, and line breaks as closely as possible. If a question asks children to trace dotted alphabet letters, represent each dotted letter with [TRACE:A] for uppercase or [TRACE:a] for lowercase, placing each marker where that letter appears. If the source shows a boxed worksheet repeating the same uppercase/lowercase pair across rows and columns, represent the entire worksheet with one marker such as [TRACE_SHEET:A]. Do not write a dotted tracing letter as ordinary solid text or mistake its dots for punctuation. When a non-letter sketch or simple drawing appears within a question, describe its position using an inline marker in this exact format: [ILLUSTRATION:object-id]. Use the closest matching id from this built-in DocuScan picture library: ${illustrationIds}. Put the marker where the drawing belongs in the question. If no picture matches, use a short lowercase hyphenated description as the id (for example [ILLUSTRATION:watering-can]); do not omit the sketch or pretend its text is readable. For any pencil-drawn circle around a letter, answer choice, or word, represent the circled content using the exact ASCII format [CIRCLED:content], for example [CIRCLED:A]. Do not use Unicode circled-letter or circle symbols. Do not answer, solve, summarize, or invent content. Mark unreadable words as [unclear]. Return only the transcription.`;
+  return `Transcribe all readable text from the attached exam page images in page order. This is the ${term} examination for ${cls}, ${subject}, ${session} academic session. Preserve the original wording, section headings, symbols, and line breaks. NUMBERING: Put each main question on its own line and copy its clearly visible printed number exactly once, followed by a period (for example, 1. Question text). Keep the printed sequence continuous across page breaks; do not restart numbering just because a new page or image begins. Do not invent or silently change a printed number; if it cannot be read, use [unclear number]. Keep subquestions and answer choices nested under their main question with their original labels (for example a), b), (i), (ii), (A), (B)); never promote them to main questions or include them in the main-question sequence. Do not mistake dates, quantities, marks, dotted tracing letters, or illustration markers for question numbers. If the source visibly uses a different numbering style, preserve that style and hierarchy. If a question asks children to trace dotted alphabet letters, represent each dotted letter with [TRACE:A] for uppercase or [TRACE:a] for lowercase, placing each marker where that letter appears. If the source shows a boxed worksheet repeating the same uppercase/lowercase pair across rows and columns, represent the entire worksheet with one marker such as [TRACE_SHEET:A]. Do not write a dotted tracing letter as ordinary solid text or mistake its dots for punctuation. When a non-letter sketch or simple drawing appears within a question, describe its position using an inline marker in this exact format: [ILLUSTRATION:object-id]. Use the closest matching id from this built-in DocuScan picture library: ${illustrationIds}. Put the marker where the drawing belongs in the question. If no picture matches, use a short lowercase hyphenated description as the id (for example [ILLUSTRATION:watering-can]); do not omit the sketch or pretend its text is readable. For any pencil-drawn circle around a letter, answer choice, or word, represent the circled content using the exact ASCII format [CIRCLED:content], for example [CIRCLED:A]. Do not use Unicode circled-letter or circle symbols. Do not answer, solve, summarize, or invent content. Mark unreadable words as [unclear]. Return only the transcription.`;
 }
 
 function buildIllustrationSvg(item) {
@@ -2681,8 +2681,11 @@ function fixNumbering() {
 
 function fixNumberingLogic(text) {
   let counter = 1;
-  // Replace patterns like "1 ", "1)", "1-", "(1)" at start of line
-  return text.replace(/^[\s]*(\(?\d+[\.\)\-\s])\s*/gm, () => `${counter++}. `);
+  return text.split('\n').map(line => {
+    const match = line.match(/^(\d{1,3})[.)]([ \t]+)(.*)$/);
+    if (!match || /^(?:section|part|instructions?|total|date|time|marks?)\b/i.test(match[3])) return line;
+    return `${counter++}. ${match[3]}`;
+  }).join('\n');
 }
 
 function fixPunctuation(text) {
@@ -2718,10 +2721,9 @@ function removeExtraSpacesLogic(text) {
 function addQuestion() {
   const editor = document.getElementById('examEditor');
   const lines = editor.value.split('\n').filter(l => l.trim());
-  // Find next question number
   let maxNum = 0;
   lines.forEach(l => {
-    const m = l.match(/^(\d+)\./);
+    const m = l.match(/^(\d{1,3})[.)]\s+/);
     if (m) maxNum = Math.max(maxNum, parseInt(m[1]));
   });
   editor.value += `\n${maxNum + 1}. `;

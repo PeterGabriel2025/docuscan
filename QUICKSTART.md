@@ -26,8 +26,9 @@ git push -u origin main
 3. In Gemini, use its attachment button to take photos or choose them from your phone gallery (up to 10 per message)
 4. Copy the supplied prompt into Gemini and send it with the images
 5. Copy Gemini's transcription back into DocuScan
-6. Review the text; use **Pictures / Trace Letters** to insert a dotted letter (select its size) or a repeated boxed uppercase/lowercase worksheet, or add a picture where a sketch is needed
-7. Preview the paper, then export as PDF or print
+6. Review the text; use **Fix Numbers** if main question numbers need a continuous sequence (subparts and choices stay intact)
+7. Use **Pictures / Trace Letters** to insert a dotted letter (select its size), a repeated boxed uppercase/lowercase worksheet, or a picture sketch
+8. Preview the paper, then export as PDF or print
 
 ---
 
