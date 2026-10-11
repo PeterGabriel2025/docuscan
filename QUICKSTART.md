@@ -26,7 +26,7 @@ git push -u origin main
 3. In Gemini, use its attachment button to take photos or choose them from your phone gallery (up to 10 per message)
 4. Copy the supplied prompt into Gemini and send it with the images
 5. Copy Gemini's transcription back into DocuScan
-6. Review the text; use **Add Illustration** to place a library picture at the editor cursor where a sketch is needed
+6. Review the text; use **Pictures / Trace Letters** to insert a dotted letter (select its size) or a repeated boxed uppercase/lowercase worksheet, or add a picture where a sketch is needed
 7. Preview the paper, then export as PDF or print
 
 ---
@@ -40,7 +40,8 @@ git push -u origin main
 | A page image is missing | In Gemini, use its attachment button to take or select the missing page |
 | More than 10 pages | Process them in batches of up to 10, then combine the transcriptions |
 | Transcription is unclear | Take a clear, well-lit photo in Gemini, keeping the full page in focus |
-| Gemini sketch ID has no matching picture | Use **Add Illustration** to insert the closest available library picture, or leave the labeled sketch placeholder in the paper |
+| Gemini sketch ID has no matching picture | Use **Pictures / Trace Letters** to insert the closest available library picture, or leave the labeled sketch placeholder in the paper |
+| Dotted tracing letters are missing or too small | The Gemini prompt uses `[TRACE:A]` / `[TRACE:a]`; you can also insert letters from **Alphabet Tracing** and choose a larger size or add a boxed Aa worksheet |
 
 ---
 

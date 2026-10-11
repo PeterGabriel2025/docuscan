@@ -646,6 +646,49 @@ textarea:focus {
   font: inherit;
 }
 
+.trace-worksheet-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--mist);
+  border-radius: 10px;
+  background: white;
+}
+
+.trace-worksheet-field {
+  display: grid;
+  flex: 1 1 140px;
+  gap: 4px;
+  color: var(--slate);
+  font-size: 0.78rem;
+  font-weight: 600;
+}
+
+.trace-worksheet-field select {
+  min-height: 40px;
+  padding: 7px 9px;
+  border: 1px solid var(--mist);
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+}
+
+.trace-worksheet-insert {
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--navy);
+  color: white;
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
 .illustration-categories {
   display: flex;
   gap: 7px;
@@ -841,6 +884,51 @@ textarea:focus {
   margin: 2px 4px;
   object-fit: contain;
   vertical-align: middle;
+}
+
+.preview-trace-letter {
+  display: inline-block;
+  margin: 2px 3px;
+  object-fit: contain;
+  vertical-align: middle;
+}
+
+.preview-trace-sheet {
+  display: block;
+  width: 100%;
+  margin: 8px 0;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+.preview-trace-row {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.preview-trace-cell {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 1px solid #333;
+  overflow: hidden;
+}
+
+.preview-trace-cell .preview-trace-letter {
+  width: min(var(--trace-glyph-width), calc(50% - 4px));
+  height: auto;
+  aspect-ratio: 0.96;
+  flex: 0 1 auto;
+}
+
+.preview-trace-cell + .preview-trace-cell {
+  border-left: 0;
+}
+
+.preview-trace-row + .preview-trace-row .preview-trace-cell {
+  border-top: 0;
 }
 
 .preview-illustration-missing {
@@ -1758,7 +1846,7 @@ select:focus, input[type="text"]:focus, textarea:focus {
             <button class="tool-btn" onclick="fixNumbering()" title="Fix question numbering">🔢 Fix Numbers</button>
             <button class="tool-btn" onclick="removeExtraSpaces()" title="Remove extra spaces">🧹 Clean Spaces</button>
             <button class="tool-btn" onclick="addQuestion()" title="Add a new question line">＋ Add Question</button>
-            <button class="tool-btn" onclick="openIllustrationLibrary()" title="Insert an illustration at the cursor">🖼 Add Illustration</button>
+            <button class="tool-btn" onclick="openIllustrationLibrary()" title="Insert a picture or dotted tracing letter at the cursor">🖼 Pictures / Trace Letters</button>
             <button class="tool-btn" onclick="copyExtractedText()" title="Copy extracted text only">📋 Copy All Text</button>
             <button class="tool-btn" onclick="clearEditor()" title="Clear all text">🗑 Clear</button>
           </div>
@@ -1861,14 +1949,29 @@ select:focus, input[type="text"]:focus, textarea:focus {
   <div class="illustration-dialog-inner">
     <div class="illustration-dialog-header">
       <div>
-        <h2 id="illustrationDialogTitle">Add an illustration</h2>
-        <p>Choose a picture to insert at the editor cursor. It will appear in preview and PDF.</p>
+        <h2 id="illustrationDialogTitle">Add an illustration or tracing letter</h2>
+        <p>Choose an item to insert at the editor cursor. It will appear in preview and exports.</p>
       </div>
       <button type="button" class="illustration-dialog-close" onclick="closeIllustrationLibrary()">Close</button>
     </div>
     <div class="illustration-library-controls">
-      <label class="sr-only" for="illustrationSearch">Search illustrations</label>
-      <input class="illustration-search" id="illustrationSearch" type="search" placeholder="Search pictures, e.g. apple, cat, pencil..." oninput="renderIllustrationLibrary()" />
+      <label class="sr-only" for="illustrationSearch">Search pictures and tracing letters</label>
+      <input class="illustration-search" id="illustrationSearch" type="search" placeholder="Search pictures or tracing letters, e.g. apple, cat, A..." oninput="renderIllustrationLibrary()" />
+      <div class="trace-worksheet-controls">
+        <label class="trace-worksheet-field" for="traceLetterSize">
+          Tracing letter size
+          <select id="traceLetterSize">
+            <option value="96">Standard</option>
+            <option value="128" selected>Large</option>
+            <option value="160">Extra large</option>
+          </select>
+        </label>
+        <label class="trace-worksheet-field" for="traceSheetLetter">
+          Letter for worksheet grid
+          <select id="traceSheetLetter"></select>
+        </label>
+        <button type="button" class="trace-worksheet-insert" onclick="insertTraceWorksheet()">＋ Add boxed Aa worksheet</button>
+      </div>
       <div class="illustration-categories" id="illustrationCategories" aria-label="Illustration categories"></div>
     </div>
     <div class="illustration-grid" id="illustrationGrid" aria-live="polite"></div>
@@ -1923,7 +2026,7 @@ const EXAM_SCHOOL_NAME = 'GREAT TURNING POINT INTERNATIONAL SCHOOL';
 const EXAM_SCHOOL_ADDRESS = 'UMUODE, OSISIOMA NGWA L.G.A., ABIA STATE.';
 const ILLUSTRATION_CATEGORIES = [
   'All', 'Fruits & Food', 'Animals', 'People', 'School', 'Home & Objects',
-  'Transport', 'Nature', 'Shapes'
+  'Transport', 'Nature', 'Shapes', 'Alphabet Tracing'
 ];
 const ILLUSTRATION_ART = {
   apple: '<path fill="#ef4444" d="M48 30c-20-15-36 2-30 25 5 19 18 30 30 23 12 7 25-4 30-23 6-23-10-40-30-25Z"/><path d="M48 30c-1-10 2-17 8-22"/><path fill="#34a853" d="M50 18c9-9 18-7 21-5-3 9-10 13-20 12Z"/>',
@@ -2013,7 +2116,13 @@ const ILLUSTRATION_LIBRARY = [
   ['flower','Flower','Nature'],
   ['triangle','Triangle','Shapes'],['square','Square','Shapes'],['circle','Circle','Shapes'],
   ['star','Star','Shapes'],['rectangle','Rectangle','Shapes'],['heart','Heart','Shapes']
-].map(([id, label, category]) => ({ id, label, category, svg: ILLUSTRATION_ART[id] }));
+].map(([id, label, category]) => ({ id, label, category, svg: ILLUSTRATION_ART[id] }))
+  .concat(Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', letter => ({
+    id: `trace-${letter}`,
+    label: `Trace ${letter} (${letter === letter.toUpperCase() ? 'uppercase' : 'lowercase'})`,
+    category: 'Alphabet Tracing',
+    traceLetter: letter
+  })));
 let activeIllustrationCategory = 'All';
 let illustrationInsertPosition = null;
 const illustrationImageCache = new Map();
@@ -2267,8 +2376,11 @@ function handleSubjectChange(sel) {
    ================================================================ */
 function buildManualTranscriptionPrompt() {
   const { term, session, subject, cls } = appState.details;
-  const illustrationIds = ILLUSTRATION_LIBRARY.map(item => item.id).join(', ');
-  return `Transcribe all readable text from the attached exam page images in page order. This is the ${term} examination for ${cls}, ${subject}, ${session} academic session. Preserve the original wording, numbering, section headings, answer choices, symbols, and line breaks as closely as possible. When a sketch or simple drawing appears within a question, describe its position using an inline marker in this exact format: [ILLUSTRATION:object-id]. Use the closest matching id from this built-in DocuScan illustration library: ${illustrationIds}. Put the marker where the drawing belongs in the question. If no library item matches, use a short lowercase hyphenated description as the id (for example [ILLUSTRATION:watering-can]); do not omit the sketch or pretend its text is readable. For any pencil-drawn circle around a letter, answer choice, or word, represent the circled content using the exact ASCII format [CIRCLED:content], for example [CIRCLED:A]. Do not use Unicode circled-letter or circle symbols. Do not answer, solve, summarize, or invent content. Mark unreadable words as [unclear]. Return only the transcription.`;
+  const illustrationIds = ILLUSTRATION_LIBRARY
+    .filter(item => !item.traceLetter && !['letterA', 'letterP'].includes(item.id))
+    .map(item => item.id)
+    .join(', ');
+  return `Transcribe all readable text from the attached exam page images in page order. This is the ${term} examination for ${cls}, ${subject}, ${session} academic session. Preserve the original wording, numbering, section headings, answer choices, symbols, and line breaks as closely as possible. If a question asks children to trace dotted alphabet letters, represent each dotted letter with [TRACE:A] for uppercase or [TRACE:a] for lowercase, placing each marker where that letter appears. If the source shows a boxed worksheet repeating the same uppercase/lowercase pair across rows and columns, represent the entire worksheet with one marker such as [TRACE_SHEET:A]. Do not write a dotted tracing letter as ordinary solid text or mistake its dots for punctuation. When a non-letter sketch or simple drawing appears within a question, describe its position using an inline marker in this exact format: [ILLUSTRATION:object-id]. Use the closest matching id from this built-in DocuScan picture library: ${illustrationIds}. Put the marker where the drawing belongs in the question. If no picture matches, use a short lowercase hyphenated description as the id (for example [ILLUSTRATION:watering-can]); do not omit the sketch or pretend its text is readable. For any pencil-drawn circle around a letter, answer choice, or word, represent the circled content using the exact ASCII format [CIRCLED:content], for example [CIRCLED:A]. Do not use Unicode circled-letter or circle symbols. Do not answer, solve, summarize, or invent content. Mark unreadable words as [unclear]. Return only the transcription.`;
 }
 
 function buildIllustrationSvg(item) {
@@ -2279,12 +2391,32 @@ function illustrationDataUrl(item) {
   return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(buildIllustrationSvg(item))}`;
 }
 
+function traceLetterDataUrl(letter) {
+  const fontSize = letter === letter.toUpperCase() ? 78 : 72;
+  const baseline = letter === letter.toUpperCase() ? 84 : 82;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 100"><text x="48" y="${baseline}" text-anchor="middle" font-family="Arial, sans-serif" font-size="${fontSize}" font-weight="700" fill="none" stroke="#25324b" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="0.1 5">${letter}</text></svg>`;
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+}
+
+function libraryItemDataUrl(item) {
+  return item.traceLetter ? traceLetterDataUrl(item.traceLetter) : illustrationDataUrl(item);
+}
+
 function openIllustrationLibrary() {
   const editor = document.getElementById('examEditor');
   if (document.getElementById('editorLayout').style.display === 'none') {
-    return showToast('Load a transcription into the editor before adding an illustration.', 'error');
+    return showToast('Load a transcription into the editor before adding tracing letters.', 'error');
   }
 
+  const sheetLetterSelect = document.getElementById('traceSheetLetter');
+  if (!sheetLetterSelect.options.length) {
+    Array.from('ABCDEFGHIJKLMNOPQRSTUVWXYZ', letter => {
+      const option = document.createElement('option');
+      option.value = letter;
+      option.textContent = `${letter} / ${letter.toLowerCase()}`;
+      sheetLetterSelect.appendChild(option);
+    });
+  }
   illustrationInsertPosition = {
     start: editor.selectionStart,
     end: editor.selectionEnd
@@ -2343,7 +2475,7 @@ function renderIllustrationLibrary() {
     button.className = 'illustration-item';
     button.setAttribute('aria-label', `Insert ${item.label}`);
     const image = document.createElement('img');
-    image.src = illustrationDataUrl(item);
+    image.src = libraryItemDataUrl(item);
     image.alt = '';
     const label = document.createElement('span');
     label.textContent = item.label;
@@ -2361,7 +2493,9 @@ function insertIllustration(item) {
   const after = editor.value.slice(end);
   const prefix = before && !/\s$/.test(before) ? ' ' : '';
   const suffix = after && !/^\s/.test(after) ? ' ' : '';
-  const marker = `[ILLUSTRATION:${item.id}]`;
+  const marker = item.traceLetter
+    ? `[TRACE:${item.traceLetter}|${getTraceLetterSize()}]`
+    : `[ILLUSTRATION:${item.id}]`;
   const insertedText = `${prefix}${marker}${suffix}`;
 
   editor.value = `${before}${insertedText}${after}`;
@@ -2374,28 +2508,102 @@ function insertIllustration(item) {
   showToast(`${item.label} added to the exam.`, 'success');
 }
 
+function getTraceLetterSize() {
+  return normalizeTraceLetterSize(document.getElementById('traceLetterSize').value);
+}
+
+function normalizeTraceLetterSize(value) {
+  const size = Number(value);
+  return [96, 128, 160].includes(size) ? size : 128;
+}
+
+function insertTraceWorksheet() {
+  const editor = document.getElementById('examEditor');
+  const letter = document.getElementById('traceSheetLetter').value;
+  if (!/^[A-Z]$/.test(letter)) {
+    return showToast('Choose a letter for the tracing worksheet.', 'error');
+  }
+
+  const start = illustrationInsertPosition?.start ?? editor.selectionStart;
+  const end = illustrationInsertPosition?.end ?? editor.selectionEnd;
+  const before = editor.value.slice(0, start);
+  const after = editor.value.slice(end);
+  const marker = `[TRACE_SHEET:${letter}|${getTraceLetterSize()}]`;
+  const prefix = before && !/\n$/.test(before) ? '\n' : '';
+  const suffix = after && !/^\n/.test(after) ? '\n' : '';
+  const insertedText = `${prefix}${marker}${suffix}`;
+
+  editor.value = `${before}${insertedText}${after}`;
+  const caret = before.length + insertedText.length;
+  editor.focus();
+  editor.setSelectionRange(caret, caret);
+  illustrationInsertPosition = null;
+  scheduleDraftSave();
+  closeIllustrationLibrary();
+  showToast(`Boxed ${letter}/${letter.toLowerCase()} tracing worksheet added.`, 'success');
+}
+
 function renderPreviewBody(text) {
   const preview = document.getElementById('pvBody');
-  const markerPattern = /\[ILLUSTRATION:([a-z0-9_-]+)\]/gi;
+  const markerPattern = /\[TRACE_SHEET:([A-Z])(?:\|(\d{2,3}))?\]|\[ILLUSTRATION:([a-z0-9_-]+)\]|\[TRACE:([a-z])(?:\|(\d{2,3}))?\]/gi;
   const fragment = document.createDocumentFragment();
   let lastIndex = 0;
   let match;
 
   while ((match = markerPattern.exec(text)) !== null) {
     fragment.appendChild(document.createTextNode(text.slice(lastIndex, match.index)));
-    const item = ILLUSTRATION_LIBRARY.find(entry => entry.id === match[1].toLowerCase());
-    if (item) {
+    if (match[1]) {
+      const upper = match[1];
+      const lower = upper.toLowerCase();
+      const size = normalizeTraceLetterSize(match[2]);
+      const sheet = document.createElement('div');
+      sheet.className = 'preview-trace-sheet';
+      sheet.setAttribute('role', 'group');
+      sheet.setAttribute('aria-label', `Boxed ${upper} and ${lower} tracing worksheet`);
+      sheet.style.setProperty('--trace-glyph-width', `${size * 0.75}px`);
+      for (let row = 0; row < 2; row += 1) {
+        const rowElement = document.createElement('div');
+        rowElement.className = 'preview-trace-row';
+        for (let column = 0; column < 4; column += 1) {
+          const cell = document.createElement('div');
+          cell.className = 'preview-trace-cell';
+          [upper, lower].forEach(letter => {
+            const image = document.createElement('img');
+            image.className = 'preview-trace-letter';
+            image.src = traceLetterDataUrl(letter);
+            image.alt = `Dotted ${letter === upper ? 'uppercase' : 'lowercase'} ${letter}`;
+            cell.appendChild(image);
+          });
+          rowElement.appendChild(cell);
+        }
+        sheet.appendChild(rowElement);
+      }
+      fragment.appendChild(sheet);
+    } else if (match[4]) {
       const image = document.createElement('img');
-      image.className = 'preview-illustration';
-      image.src = illustrationDataUrl(item);
-      image.alt = item.label;
-      image.title = item.label;
+      image.className = 'preview-trace-letter';
+      image.src = traceLetterDataUrl(match[4]);
+      const size = normalizeTraceLetterSize(match[5]);
+      image.style.height = `${size * 0.78}px`;
+      image.style.width = `${size * 0.75}px`;
+      image.alt = `Dotted ${match[4] === match[4].toUpperCase() ? 'uppercase' : 'lowercase'} ${match[4]} for tracing`;
+      image.title = image.alt;
       fragment.appendChild(image);
     } else {
-      const placeholder = document.createElement('span');
-      placeholder.className = 'preview-illustration-missing';
-      placeholder.textContent = `[Sketch: ${match[1].replace(/[-_]+/g, ' ')}]`;
-      fragment.appendChild(placeholder);
+      const item = ILLUSTRATION_LIBRARY.find(entry => entry.id === match[3].toLowerCase());
+      if (item && !item.traceLetter) {
+        const image = document.createElement('img');
+        image.className = 'preview-illustration';
+        image.src = illustrationDataUrl(item);
+        image.alt = item.label;
+        image.title = item.label;
+        fragment.appendChild(image);
+      } else {
+        const placeholder = document.createElement('span');
+        placeholder.className = 'preview-illustration-missing';
+        placeholder.textContent = `[Sketch: ${match[3].replace(/[-_]+/g, ' ')}]`;
+        fragment.appendChild(placeholder);
+      }
     }
     lastIndex = markerPattern.lastIndex;
   }
@@ -2749,18 +2957,19 @@ async function createPaperImageBlob() {
   });
 }
 
-function loadIllustrationImage(id) {
-  if (illustrationImageCache.has(id)) return illustrationImageCache.get(id);
-  const item = ILLUSTRATION_LIBRARY.find(entry => entry.id === id);
+function loadIllustrationImage(id, traceLetter = null) {
+  const cacheKey = traceLetter ? `trace-${traceLetter}` : id;
+  if (illustrationImageCache.has(cacheKey)) return illustrationImageCache.get(cacheKey);
+  const item = ILLUSTRATION_LIBRARY.find(entry => entry.id === cacheKey);
   if (!item) return Promise.resolve(null);
 
   const imagePromise = new Promise((resolve, reject) => {
     const image = new Image();
     image.onload = () => resolve(image);
     image.onerror = () => reject(new Error(`Unable to load illustration "${item.label}"`));
-    image.src = illustrationDataUrl(item);
+    image.src = libraryItemDataUrl(item);
   });
-  illustrationImageCache.set(id, imagePromise);
+  illustrationImageCache.set(cacheKey, imagePromise);
   return imagePromise;
 }
 
@@ -2777,16 +2986,25 @@ async function renderPaperToCanvas() {
 
   tempCtx.font = '24px "Times New Roman", serif';
   const bodyLines = wrapCanvasText(tempCtx, bodyText, maxTextWidth);
-  const illustrationIds = [...bodyText.matchAll(/\[ILLUSTRATION:([a-z0-9_-]+)\]/gi)]
-    .map(match => match[1].toLowerCase());
+  const renderMarkers = [...bodyText.matchAll(/\[TRACE_SHEET:([A-Z])(?:\|(\d{2,3}))?\]|\[ILLUSTRATION:([a-z0-9_-]+)\]|\[TRACE:([a-z])(?:\|(\d{2,3}))?\]/gi)];
+  const imageKeys = renderMarkers.flatMap(match => {
+    if (match[1]) return [`trace-${match[1].toUpperCase()}`, `trace-${match[1].toLowerCase()}`];
+    if (match[3]) return [match[3].toLowerCase()];
+    return [`trace-${match[4]}`];
+  });
   const loadedIllustrations = new Map(await Promise.all(
-    [...new Set(illustrationIds)].map(async id => [id, await loadIllustrationImage(id)])
+    [...new Set(imageKeys)].map(async key => [key, await loadIllustrationImage(key)])
   ));
   const bodyHeight = bodyLines.reduce((height, line) => {
     return height + (line === '' ? paragraphGap : canvasLineHeight(line, bodyLineHeight));
   }, 0);
 
-  const height = Math.max(1754, 330 + bodyHeight + 120);
+  const traceSheetCount = bodyLines.filter(line => /^\[TRACE_SHEET:[A-Z](?:\|\d{2,3})?\]$/i.test(line)).length;
+  const pageHeightPx = Math.round(width * 297 / 210);
+  const contentHeight = 330 + bodyHeight + 120;
+  const height = traceSheetCount
+    ? Math.max(pageHeightPx, Math.ceil(contentHeight / pageHeightPx) * pageHeightPx)
+    : Math.max(1754, contentHeight);
   const canvas = document.createElement('canvas');
   canvas.width = width;
   canvas.height = height;
@@ -2840,22 +3058,31 @@ async function renderPaperToCanvas() {
 }
 
 function canvasLineHeight(line, defaultHeight) {
-  return /\[ILLUSTRATION:[a-z0-9_-]+\]/i.test(line) ? 78 : defaultHeight;
+  const worksheet = line.match(/^\[TRACE_SHEET:([A-Z])(?:\|(\d{2,3}))?\]$/i);
+  if (worksheet) return 2 * (normalizeTraceLetterSize(worksheet[2]) + 20);
+  const traceLetter = line.match(/\[TRACE:[a-z](?:\|(\d{2,3}))?\]/i);
+  if (traceLetter) return Math.max(defaultHeight, normalizeTraceLetterSize(traceLetter[1]) * 0.78 + 10);
+  return /\[ILLUSTRATION:[a-z0-9_-]+\]/i.test(line) ? 78
+    : defaultHeight;
 }
 
 function measureCanvasLine(ctx, line) {
-  const markerPattern = /\[ILLUSTRATION:([a-z0-9_-]+)\]|\[CIRCLED:([^\]]+)\]/gi;
+  const markerPattern = /\[TRACE_SHEET:([A-Z])(?:\|(\d{2,3}))?\]|\[ILLUSTRATION:([a-z0-9_-]+)\]|\[TRACE:([a-z])(?:\|(\d{2,3}))?\]|\[CIRCLED:([^\]]+)\]/gi;
   let width = 0;
   let lastIndex = 0;
   let match;
   while ((match = markerPattern.exec(line)) !== null) {
     width += ctx.measureText(line.slice(lastIndex, match.index)).width;
-    if (match[1]) {
-      width += ILLUSTRATION_LIBRARY.some(item => item.id === match[1].toLowerCase())
-        ? 78
-        : ctx.measureText(`[Sketch: ${match[1].replace(/[-_]+/g, ' ')}]`).width;
-    } else {
-      width += ctx.measureText(match[2].trim()).width;
+    if (!match[1]) {
+      if (match[3]) {
+        width += ILLUSTRATION_LIBRARY.some(item => item.id === match[3].toLowerCase())
+          ? 78
+          : ctx.measureText(`[Sketch: ${match[3].replace(/[-_]+/g, ' ')}]`).width;
+      } else if (match[4]) {
+        width += 56 * (normalizeTraceLetterSize(match[5]) / 128);
+      } else {
+        width += ctx.measureText(match[6].trim()).width;
+      }
     }
     lastIndex = markerPattern.lastIndex;
   }
@@ -2863,13 +3090,19 @@ function measureCanvasLine(ctx, line) {
 }
 
 function drawTranscribedLine(ctx, line, x, y, illustrations = new Map()) {
-  const markerPattern = /\[ILLUSTRATION:([a-z0-9_-]+)\]|\[CIRCLED:([^\]]+)\]/gi;
+  const worksheet = line.match(/^\[TRACE_SHEET:([A-Z])(?:\|(\d{2,3}))?\]$/i);
+  if (worksheet) {
+    drawTraceWorksheet(ctx, x, y, worksheet[1].toUpperCase(), normalizeTraceLetterSize(worksheet[2]), illustrations);
+    return;
+  }
+
+  const markerPattern = /\[ILLUSTRATION:([a-z0-9_-]+)\]|\[TRACE:([a-z])(?:\|(\d{2,3}))?\]|\[CIRCLED:([^\]]+)\]/gi;
   const fontSize = parseFloat(ctx.font) || 24;
   let cursorX = x;
   let lastIndex = 0;
   let match;
-  const hasIllustration = /\[ILLUSTRATION:[a-z0-9_-]+\]/i.test(line);
-  const textY = y + (hasIllustration ? 24 : 0);
+  const hasTallMarker = /\[ILLUSTRATION:[a-z0-9_-]+\]|\[TRACE:[a-z](?:\|\d{2,3})?\]/i.test(line);
+  const textY = y + (hasTallMarker ? 24 : 0);
 
   while ((match = markerPattern.exec(line)) !== null) {
     const precedingText = line.slice(lastIndex, match.index);
@@ -2887,8 +3120,15 @@ function drawTranscribedLine(ctx, line, x, y, illustrations = new Map()) {
         ctx.fillText(fallback, cursorX, textY);
         cursorX += ctx.measureText(fallback).width;
       }
+    } else if (match[2]) {
+      const image = illustrations.get(`trace-${match[2]}`);
+      const size = normalizeTraceLetterSize(match[3]) / 128;
+      if (image) {
+        ctx.drawImage(image, cursorX, y + 2, 52 * size, 58 * size);
+      }
+      cursorX += 56 * size;
     } else {
-      const circledText = match[2].trim();
+      const circledText = match[4].trim();
       if (circledText) {
         const textWidth = ctx.measureText(circledText).width;
         ctx.fillText(circledText, cursorX, textY);
@@ -2908,12 +3148,42 @@ function drawTranscribedLine(ctx, line, x, y, illustrations = new Map()) {
   ctx.fillText(remainingText, cursorX, textY);
 }
 
+function drawTraceWorksheet(ctx, x, y, letter, size, illustrations) {
+  const width = 1020;
+  const columns = 4;
+  const cellWidth = width / columns;
+  const rowHeight = size + 20;
+  const glyphHeight = size * 0.78;
+  const glyphWidth = size * 0.75;
+  const pairGap = 8;
+  const pairWidth = glyphWidth * 2 + pairGap;
+  const lowercase = letter.toLowerCase();
+
+  ctx.save();
+  ctx.strokeStyle = '#333333';
+  ctx.lineWidth = 1;
+  for (let row = 0; row < 2; row += 1) {
+    for (let column = 0; column < columns; column += 1) {
+      const cellX = x + column * cellWidth;
+      const cellY = y + row * rowHeight;
+      ctx.strokeRect(cellX, cellY, cellWidth, rowHeight);
+      const pairX = cellX + (cellWidth - pairWidth) / 2;
+      const glyphY = cellY + (rowHeight - glyphHeight) / 2;
+      const uppercaseImage = illustrations.get(`trace-${letter}`);
+      const lowercaseImage = illustrations.get(`trace-${lowercase}`);
+      if (uppercaseImage) ctx.drawImage(uppercaseImage, pairX, glyphY, glyphWidth, glyphHeight);
+      if (lowercaseImage) ctx.drawImage(lowercaseImage, pairX + glyphWidth + pairGap, glyphY, glyphWidth, glyphHeight);
+    }
+  }
+  ctx.restore();
+}
+
 function wrapCanvasText(ctx, text, maxWidth) {
   const lines = [];
   const paragraphs = text.replace(/\r\n/g, '\n').split('\n');
 
   paragraphs.forEach(paragraph => {
-    const words = paragraph.match(/\[ILLUSTRATION:[a-z0-9_-]+\]|\[CIRCLED:[^\]]+\]|\S+/gi) || [];
+    const words = paragraph.match(/(?:\[TRACE_SHEET:[A-Z](?:\|\d{2,3})?\]|\[ILLUSTRATION:[a-z0-9_-]+\]|\[TRACE:[a-z](?:\|\d{2,3})?\]|\[CIRCLED:[^\]]+\])[,.;:!?)]*|\S+/gi) || [];
     if (!words.length) {
       lines.push('');
       return;
@@ -2921,6 +3191,12 @@ function wrapCanvasText(ctx, text, maxWidth) {
 
     let line = '';
     words.forEach(word => {
+      if (/^\[TRACE_SHEET:[A-Z](?:\|\d{2,3})?\]$/i.test(word)) {
+        if (line) lines.push(line);
+        lines.push(word);
+        line = '';
+        return;
+      }
       const candidate = line ? `${line} ${word}` : word;
       if (measureCanvasLine(ctx, candidate) <= maxWidth) {
         line = candidate;
