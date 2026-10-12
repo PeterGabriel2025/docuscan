@@ -1669,7 +1669,7 @@ body { background: var(--ui-bg); color: var(--ui-text); }
 #docuscanApp .manual-ai-panel h3 { color:var(--ui-text); }
 #docuscanApp .manual-ai-panel li, #docuscanApp .manual-ai-panel p { color:var(--ui-muted); }
 #docuscanApp .manual-ai-panel textarea { min-height:90px; }
-#docuscanApp .exam-editor { color:var(--ui-text); }
+#docuscanApp .exam-editor { min-height:max(500px,75vh); height:auto; overflow-y:hidden; color:var(--ui-text); }
 #docuscanApp .mobile-menu { display:none; }
 :root[data-theme="dark"] #docuscanApp .school-badge,
 :root[data-theme="dark"] #docuscanApp .exam-header-block { background:var(--ui-surface-soft); color:var(--ui-text); }
@@ -2490,6 +2490,7 @@ function restoreDraft() {
   appState.extractedText = draft.editorText;
   document.getElementById('manualTranscriptionText').value = draft.manualTranscriptionText;
   document.getElementById('examEditor').value = draft.editorText;
+  resizeExamEditor();
   document.getElementById('editorLayout').style.display = draft.editorVisible ? 'grid' : 'none';
   document.getElementById('manualTranscriptionPrompt').value =
     details.term ? buildManualTranscriptionPrompt() : '';
@@ -2874,11 +2875,19 @@ function useManualTranscription() {
 
 function renderEditor(text, successMessage = 'Text extracted successfully!') {
   document.getElementById('editorLayout').style.display = 'grid';
-  document.getElementById('examEditor').value = text || '';
+  const editor = document.getElementById('examEditor');
+  editor.value = text || '';
+  resizeExamEditor();
   updateHeaderDisplay();
   updateChecklist();
   scheduleDraftSave();
   if (successMessage) showToast(successMessage, 'success');
+}
+
+function resizeExamEditor() {
+  const editor = document.getElementById('examEditor');
+  editor.style.height = 'auto';
+  editor.style.height = `${editor.scrollHeight + 2}px`;
 }
 
 /* ================================================================
@@ -2925,6 +2934,7 @@ function updatePreviewSchoolDetails() {
 function fixNumbering() {
   const editor = document.getElementById('examEditor');
   editor.value = fixNumberingLogic(editor.value);
+  resizeExamEditor();
   scheduleDraftSave();
   showToast('Question numbering fixed.', 'success');
 }
@@ -2939,8 +2949,9 @@ function fixNumberingLogic(text) {
 }
 
 function removeExtraSpaces() {
-  document.getElementById('examEditor').value =
-    removeExtraSpacesLogic(document.getElementById('examEditor').value);
+  const editor = document.getElementById('examEditor');
+  editor.value = removeExtraSpacesLogic(editor.value);
+  resizeExamEditor();
   scheduleDraftSave();
   showToast('Extra spaces removed.', 'success');
 }
@@ -2961,6 +2972,7 @@ function addQuestion() {
     if (m) maxNum = Math.max(maxNum, parseInt(m[1]));
   });
   editor.value += `\n${maxNum + 1}. `;
+  resizeExamEditor();
   editor.focus();
   editor.selectionStart = editor.selectionEnd = editor.value.length;
   scheduleDraftSave();
@@ -2969,6 +2981,7 @@ function addQuestion() {
 function clearEditor() {
   if (confirm('Clear all extracted text? This cannot be undone.')) {
     document.getElementById('examEditor').value = '';
+    resizeExamEditor();
     scheduleDraftSave();
   }
 }
@@ -3680,6 +3693,7 @@ document.addEventListener('keydown', event => {
   if (event.key === 'Escape') closeMobileMenu();
 });
 document.getElementById('resetFieldsBtn').addEventListener('click', resetExamFields);
+document.getElementById('examEditor').addEventListener('input', resizeExamEditor);
 document.getElementById('themeBtn').addEventListener('click', () => {
   const dark = document.documentElement.dataset.theme !== 'dark';
   document.documentElement.dataset.theme = dark ? 'dark' : 'light';
