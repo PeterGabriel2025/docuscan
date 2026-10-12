@@ -14,23 +14,21 @@ A phone-friendly examination paper tool for preparing, editing, and exporting qu
 
 📝 **Powerful Editor**
 - Editable text with exam details
-- AI-powered cleanup tools:
-  - Fix question numbering
-  - Remove extra spaces
-  - Auto-punctuation
-  - Add/remove questions
+- Focused editing tools for question numbering, extra spaces, and adding or clearing questions
 - Built-in picture library, scalable dotted alphabet letters, and boxed tracing worksheets
 
 📄 **Export Options**
 - **PDF Download** - Professional formatting with school header
+- **Text Download** - Save the prepared paper as a plain-text file
 - **Print** - Direct browser print
 - **Copy** - Copy all text to clipboard
 - **Share** - Prepare a paper image for sharing
 
 🏫 **Exam Management**
-- Select term, session, subject, class, duration
+- Select term, session, subject, class, duration, date, and school identity
 - Auto-generates professional exam header
 - Maintains branding and formatting
+- Responsive workspace with light/dark appearance, local draft controls, and a guided transcription prompt
 
 ## Quick Start
 
